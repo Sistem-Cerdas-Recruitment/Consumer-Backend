@@ -1,0 +1,44 @@
+name: Deploy to GAE
+
+on:
+  push:
+    branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploying to Google Cloud
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Cloud SDK
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17' 
+          distribution: 'adopt'
+          
+      - name: Set Up App
+        run: |
+          echo '${{ secrets.ENV }}' >> src/main/resources/application.properties
+          mvn clean install -DskipTests
+
+      - name: Deploy to App Engine
+        id: deploy
+        uses: google-github-actions/deploy-appengine@v2
+        with:
+          deliverables: target/BE-v1.jar
+          project_id: ta-2-sistem-cerdas
+
+      - name: Test
+        run: curl "${{ steps.deploy.outputs.url }}/api/hello"
