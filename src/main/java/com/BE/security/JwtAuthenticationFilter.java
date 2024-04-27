@@ -3,6 +3,7 @@ package com.BE.security;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,6 +57,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try{
                 userEmail = jwtService.extractUsername(jwt);
             } catch (Exception e){
+                response
+                    .addHeader("Set-Cookie", ResponseCookie.from("biskuat", "")
+                    .httpOnly(true)
+                    .path("/")
+                    .maxAge(0)
+                    .build().toString());
                 filterChain.doFilter(request, response);
                 return;
             }
