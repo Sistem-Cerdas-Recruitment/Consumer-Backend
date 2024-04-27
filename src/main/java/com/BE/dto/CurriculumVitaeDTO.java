@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CVDTO {
+public class CurriculumVitaeDTO {
     private String name;
     private String email;
     private String phone;

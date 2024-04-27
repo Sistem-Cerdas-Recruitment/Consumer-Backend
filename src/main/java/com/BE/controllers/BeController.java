@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.BE.dto.CVDTO;
+import com.BE.dto.CurriculumVitaeDTO;
 import com.BE.entities.User;
 import com.BE.services.CVProcessorService;
 import com.BE.services.UserService;
@@ -84,7 +84,7 @@ public class BeController {
     }
 
     @PostMapping("/processCV")
-    public String processCV(@RequestBody CVDTO cv) {
+    public String processCV(@RequestBody CurriculumVitaeDTO cv) {
 
         try {
             cvProcessorService.processCV(cv);

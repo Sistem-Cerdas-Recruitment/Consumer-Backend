@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.BE.dto.auth.AuthRequest;
-import com.BE.dto.auth.AuthResponse;
-import com.BE.dto.auth.RegisterRequest;
+import com.BE.dto.auth.AuthRequestDTO;
+import com.BE.dto.auth.AuthResponseDTO;
+import com.BE.dto.auth.RegisterRequestDTO;
 import com.BE.entities.Role;
 import com.BE.entities.User;
 import com.BE.security.JwtService;
@@ -30,7 +30,7 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public AuthResponse register(RegisterRequest registerRequest) {
+    public AuthResponseDTO register(RegisterRequestDTO registerRequest) {
 
         if(userService.getUserByEmail(registerRequest.getEmail()) != null) {
             throw new RuntimeException("User already exists");
@@ -43,11 +43,11 @@ public class AuthService {
                 .role(Role.CANDIDATE)
                 .build();
         userService.saveUser(user);
-        return AuthResponse.builder().token(jwtService.generateToken(user)).build();
+        return AuthResponseDTO.builder().token(jwtService.generateToken(user)).build();
 
     }
 
-    public AuthResponse authenticate(AuthRequest authRequest) {
+    public AuthResponseDTO authenticate(AuthRequestDTO authRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
 
@@ -55,6 +55,6 @@ public class AuthService {
         if(user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return AuthResponse.builder().token(jwtService.generateToken(user)).build();
+        return AuthResponseDTO.builder().token(jwtService.generateToken(user)).build();
     }
 }

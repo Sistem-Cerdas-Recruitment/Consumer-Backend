@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.BE.dto.auth.AuthRequest;
-import com.BE.dto.auth.AuthResponse;
-import com.BE.dto.auth.RegisterRequest;
+import com.BE.dto.auth.AuthRequestDTO;
+import com.BE.dto.auth.AuthResponseDTO;
+import com.BE.dto.auth.RegisterRequestDTO;
 import com.BE.services.auth.AuthService;
 
 import lombok.extern.log4j.Log4j2;
@@ -28,9 +28,9 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterRequestDTO registerRequest) {
         try {
-            AuthResponse response = authService.register(registerRequest);
+            AuthResponseDTO response = authService.register(registerRequest);
             ResponseCookie cookie = ResponseCookie.from("biskuat", response.getToken())
                     .httpOnly(true)
                     .path("/")
@@ -47,9 +47,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponseDTO> authenticate(@RequestBody AuthRequestDTO authRequest) {
         try {
-            AuthResponse response = authService.authenticate(authRequest);
+            AuthResponseDTO response = authService.authenticate(authRequest);
             ResponseCookie cookie = ResponseCookie.from("biskuat", response.getToken())
                     .httpOnly(true)
                     .path("/")
