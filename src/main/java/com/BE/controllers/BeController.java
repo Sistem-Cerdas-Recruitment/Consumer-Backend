@@ -1,7 +1,6 @@
 package com.BE.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,17 +39,9 @@ public class BeController {
     @Autowired
     BucketService bucketService;
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
     @RequestMapping("/hello")
     public String hello() {
         return "Hello, World!";
-    }
-
-    @GetMapping("/s3UploadTest")
-    public String s3UploadTest() {
-        return bucketService.putS3Object("test.txt", "src/main/resources/test.txt");
     }
 
     @PostMapping("/createUser")
