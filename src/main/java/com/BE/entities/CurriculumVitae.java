@@ -14,15 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CurriculumVitae extends BaseEntity{
+public class CurriculumVitae extends BaseEntity {
 
     private String fileName;
-
+    private String originalFileName;
     private String description;
-    
+
     @ManyToOne
     private User user;
-
-    @ManyToOne
-    private Job job;
 }

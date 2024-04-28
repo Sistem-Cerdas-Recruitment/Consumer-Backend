@@ -1,5 +1,6 @@
 package com.BE.services.storage;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -30,45 +32,58 @@ public class BucketService {
     private String bucketName = "sistem-cerdas-bucket";
 
     public String createPresignedGetUrl(String keyName) {
-        try {
-            GetObjectRequest objectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(keyName)
-                    .build();
+        GetObjectRequest objectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build();
 
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10)) // The URL will expire in 10 minutes.
-                    .getObjectRequest(objectRequest)
-                    .build();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10)) // The URL will expire in 10 minutes.
+                .getObjectRequest(objectRequest)
+                .build();
 
-            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
 
-            return presignedRequest.url().toExternalForm();
-        } catch (S3Exception e) {
-            throw S3Exception.builder().cause(e).build();
-        }
+        return presignedRequest.url().toExternalForm();
 
+    }
+
+    public String getUrl(String keyName) {
+        GetUrlRequest urlRequest = GetUrlRequest.builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build();
+        return s3Client.utilities().getUrl(urlRequest).toString();
+    }
+
+    public byte[] get(String keyName) {
+
+        GetObjectRequest objectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build();
+
+        return s3Client.getObjectAsBytes(objectRequest).asByteArray();
     }
 
     public String put(MultipartFile file, String name) {
         try {
             Map<String, String> metadata = new HashMap<>();
             metadata.put("x-amz-meta-myVal", "test");
+            String fileName = new Date().getTime() + "-" + name + "-" + file.getOriginalFilename();
             PutObjectRequest putOb = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(new Date().getTime() + "-" + name + "-" + file.getOriginalFilename())
+                    .key(fileName)
                     .metadata(metadata)
                     .build();
 
             byte[] bytes = file.getBytes();
             s3Client.putObject(putOb, RequestBody.fromBytes(bytes));
-            // System.out.println(objectResult); //you can verify MD5
-            return "Successfully placed " + file.getOriginalFilename() + " into bucket " + bucketName;
 
-        } catch (S3Exception e) {
+            return fileName;
+
+        } catch (IOException e) {
             throw S3Exception.builder().cause(e).build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 }
