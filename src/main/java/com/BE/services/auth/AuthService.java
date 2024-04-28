@@ -3,7 +3,6 @@ package com.BE.services.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,7 @@ public class AuthService {
     public AuthResponseDTO register(RegisterRequestDTO registerRequest) {
 
         if(userService.getUserByEmail(registerRequest.getEmail()) != null) {
-            throw new RuntimeException("User already exists");
+            throw new IllegalArgumentException("User already exists");
         }
 
         User user = User.builder()
@@ -52,9 +51,6 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
 
         User user = userService.getUserByEmail(authRequest.getEmail());
-        if(user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
         return AuthResponseDTO.builder().token(jwtService.generateToken(user)).build();
     }
 }
