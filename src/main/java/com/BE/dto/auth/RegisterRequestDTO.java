@@ -1,7 +1,5 @@
 package com.BE.dto.auth;
 
-import com.BE.entities.Role;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -14,5 +12,5 @@ public class RegisterRequestDTO {
     @NotBlank(message = "Password is required")
     private String password;
     @NotBlank(message = "Role is required")
-    private Role role;
+    private String role;
 }

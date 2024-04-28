@@ -31,15 +31,19 @@ public class AuthService {
 
     public AuthResponseDTO register(RegisterRequestDTO registerRequest) {
 
+        Role role = Role.valueOf(registerRequest.getRole());
+
         if(userService.getUserByEmail(registerRequest.getEmail()) != null) {
             throw new IllegalArgumentException("User already exists");
+        } else if(role != Role.CANDIDATE && role != Role.RECRUITER) {
+            throw new IllegalArgumentException("Invalid role");
         }
-
+        
         User user = User.builder()
                 .name(registerRequest.getName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .role(Role.CANDIDATE)
+                .role(Role.valueOf(registerRequest.getRole()))
                 .build();
         userService.saveUser(user);
         return AuthResponseDTO.builder().token(jwtService.generateToken(user)).build();
