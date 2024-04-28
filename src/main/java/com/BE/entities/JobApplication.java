@@ -23,5 +23,5 @@ public class JobApplication extends BaseEntity{
     private Job job;
 
     @ManyToOne
-    private CV cv;
+    private CurriculumVitae cv;
 }

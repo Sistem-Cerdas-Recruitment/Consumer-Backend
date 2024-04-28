@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CV extends BaseEntity{
+public class CurriculumVitae extends BaseEntity{
 
     private String fileName;
 
@@ -23,6 +23,6 @@ public class CV extends BaseEntity{
     @ManyToOne
     private User user;
 
-    // @ManyToOne
-    // private Job job;
+    @ManyToOne
+    private Job job;
 }
