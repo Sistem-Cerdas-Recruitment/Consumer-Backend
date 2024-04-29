@@ -1,6 +1,6 @@
 package com.BE.dto.file;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,5 +15,5 @@ import lombok.NoArgsConstructor;
 public class FileResponseDTO {
     private UUID id;
     private String fileName;
-    private Date uploadDate;
+    private LocalDateTime uploadDate;
 }

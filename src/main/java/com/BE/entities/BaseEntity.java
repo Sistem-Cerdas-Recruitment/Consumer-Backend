@@ -1,6 +1,6 @@
 package com.BE.entities;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,8 +23,8 @@ public abstract class BaseEntity {
     protected UUID id;
 
     @CreationTimestamp
-    protected Date createdAt;
+    protected LocalDateTime createdAt;
 
     @UpdateTimestamp
-    protected Date updatedAt;
+    protected LocalDateTime updatedAt;
 }
