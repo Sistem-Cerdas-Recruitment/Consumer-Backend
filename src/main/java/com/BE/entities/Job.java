@@ -1,5 +1,7 @@
 package com.BE.entities;
 
+import com.BE.constants.JobStatus;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ public class Job extends BaseEntity{
 
     private String title;
     private String description;
+    private JobStatus status;
 
     @ManyToOne
     private User user;
