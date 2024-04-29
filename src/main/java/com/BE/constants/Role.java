@@ -1,4 +1,4 @@
-package com.BE.entities;
+package com.BE.constants;
 
 public enum Role {
     ADMIN,

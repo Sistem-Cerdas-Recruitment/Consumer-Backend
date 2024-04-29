@@ -6,10 +6,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.BE.constants.Role;
 import com.BE.dto.auth.AuthRequestDTO;
 import com.BE.dto.auth.AuthResponseDTO;
 import com.BE.dto.auth.RegisterRequestDTO;
-import com.BE.entities.Role;
 import com.BE.entities.User;
 import com.BE.security.JwtService;
 import com.BE.services.UserService;
@@ -38,7 +38,7 @@ public class AuthService {
         } else if(role != Role.CANDIDATE && role != Role.RECRUITER) {
             throw new IllegalArgumentException("Invalid role");
         }
-        
+
         User user = User.builder()
                 .name(registerRequest.getName())
                 .email(registerRequest.getEmail())
