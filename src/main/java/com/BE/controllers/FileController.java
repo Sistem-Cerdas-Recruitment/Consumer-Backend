@@ -62,7 +62,7 @@ public class FileController {
     @PostMapping("/cv/upload")
     public ResponseEntity<Object> uploadCV(@RequestParam("file") MultipartFile file) {
 
-        if(file.getOriginalFilename() == null || file.getOriginalFilename().endsWith(".pdf")){
+        if(file.getOriginalFilename() == null || !file.getOriginalFilename().endsWith(".pdf")){
             throw new InvalidFileNameException(file.getOriginalFilename(), "Invalid file format. Only PDF files are allowed.");
         }
 
