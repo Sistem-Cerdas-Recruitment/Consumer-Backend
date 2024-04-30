@@ -16,7 +16,7 @@ public class CVProcessorService {
     public void processCV(CurriculumVitaeDTO cv) throws Exception{
         try {
             String cvJson = objectMapper.writeValueAsString(cv);
-            kafkaProducer.sendMessage(cvJson);
+            kafkaProducer.sendMessage("first_topic", cvJson);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send message: " + e);
         }

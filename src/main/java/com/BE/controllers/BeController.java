@@ -1,5 +1,7 @@
 package com.BE.controllers;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,9 +70,9 @@ public class BeController {
     }
 
     @PostMapping("/testKafka")
-    public String testKafka(@RequestBody String message) {
+    public String testKafka(@RequestBody Map<String, String> body) {
         try {
-            kafkaProducer.sendMessage(message);
+            kafkaProducer.sendMessage(body.get("topic"), body.get("message"));
             return "Message sent successfully!";
         } catch (Exception e) {
             return "Failed to send message: " + e;

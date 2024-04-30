@@ -16,12 +16,12 @@ public class KafkaProducer {
     @Autowired
     KafkaTemplate<Integer, String> kafkaTemplate;
 
-    public CompletableFuture<SendResult<Integer, String>> sendMessageAsync(String message) {
-        return kafkaTemplate.send("first_topic", message);
+    public CompletableFuture<SendResult<Integer, String>> sendMessageAsync(String topic, String message) {
+        return kafkaTemplate.send(topic, message);
     }
 
-    public void sendMessage(String message) throws Exception{
-        CompletableFuture<SendResult<Integer, String>> future = kafkaTemplate.send("first_topic", message);
+    public void sendMessage(String topic, String message) throws Exception{
+        CompletableFuture<SendResult<Integer, String>> future = kafkaTemplate.send(topic, message);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 log.info("Message sent successfully: " + result);
