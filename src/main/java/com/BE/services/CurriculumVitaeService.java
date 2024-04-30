@@ -1,5 +1,6 @@
 package com.BE.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,37 +25,47 @@ public class CurriculumVitaeService {
     @Autowired
     BucketService bucketService;
 
-    public String get(UUID id, User user) {
-        CurriculumVitae cv = curriculumVitaeRepository.findById(id).orElse(null);
-        if (cv != null) {
-            if (cv.getUser().getId().equals(user.getId())) {
-                return bucketService.createPresignedGetUrl(cv.getFileName());
-            } else {
-                throw new AccessDeniedException("You are not authorized to access this resource");
-            }
+    public CurriculumVitae find(UUID id, User user) {
+        CurriculumVitae cv = curriculumVitaeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("CV not found"));
+
+        if (cv.getUser().getId().equals(user.getId())) {
+            return cv;
+        } else {
+            throw new AccessDeniedException("You are not authorized to access this resource");
         }
-        return null;
     }
 
-    public byte[] view(UUID id, User user) {
-        CurriculumVitae cv = curriculumVitaeRepository.findById(id).orElse(null);
-        if(cv != null){
-            if (cv.getUser().getId().equals(user.getId())) {
-                return bucketService.get(cv.getFileName());
-            } else{
-                throw new AccessDeniedException("You are not authorized to access this resource");
-            }
+    public String get(UUID id, User user) {
+        CurriculumVitae cv = curriculumVitaeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("CV not found"));
+
+        if (cv.getUser().getId().equals(user.getId())) {
+            return bucketService.createPresignedGetUrl(cv.getFileName());
+        } else {
+            throw new AccessDeniedException("You are not authorized to access this resource");
         }
-        return null;
+
     }
 
     public Page<CurriculumVitae> get(User user) {
-        return curriculumVitaeRepository.findAllByUser(user, PageRequest.of(0, 3, Sort.by(Sort.Direction.ASC, "createdAt")));
+        return curriculumVitaeRepository.findAllByUser(user,
+                PageRequest.of(0, 3, Sort.by(Sort.Direction.ASC, "createdAt")));
+    }
+
+    public byte[] view(UUID id, User user) {
+        CurriculumVitae cv = curriculumVitaeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("CV not found"));
+        if (cv.getUser().getId().equals(user.getId())) {
+            return bucketService.get(cv.getFileName());
+        } else {
+            throw new AccessDeniedException("You are not authorized to access this resource");
+        }
     }
 
     public CurriculumVitae save(MultipartFile file, User user) {
         String fileName = bucketService.put(file, user.getName());
-        
+
         CurriculumVitae cv = CurriculumVitae.builder()
                 .originalFileName(file.getOriginalFilename())
                 .fileName(fileName)

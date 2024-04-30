@@ -1,6 +1,5 @@
 package com.BE.repositories;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -13,8 +12,6 @@ import com.BE.entities.Job;
 public interface JobRepository extends JpaRepository<Job, UUID> {
 
     public @NonNull Page<Job> findAll(@NonNull Pageable pageable);
-
-    public @NonNull List<Job> findAll();
 
     public @NonNull Page<Job> findAllByTitleContaining(String title, Pageable pageable);
 }
