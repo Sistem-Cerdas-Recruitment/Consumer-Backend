@@ -1,5 +1,6 @@
 package com.BE.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.dto.CurriculumVitaeDTO;
+import com.BE.dto.InterviewChatLogDTO;
 import com.BE.entities.User;
+import com.BE.services.AntiCheatService;
 import com.BE.services.CVProcessorService;
 import com.BE.services.UserService;
 import com.BE.services.kafka.KafkaProducer;
@@ -40,6 +43,9 @@ public class BeController {
 
     @Autowired
     BucketService bucketService;
+
+    @Autowired
+    AntiCheatService antiCheatService;
 
     @RequestMapping("/hello")
     public String hello() {
@@ -76,6 +82,16 @@ public class BeController {
             return "Message sent successfully!";
         } catch (Exception e) {
             return "Failed to send message: " + e;
+        }
+    }
+
+    @PostMapping("anti-cheat")
+    public String antiCheat(@RequestBody List<InterviewChatLogDTO> body) {
+        try {
+            antiCheatService.checkForCheating(body);
+            return "success";
+        } catch (Exception e) {
+            return "Failed to detect cheating: " + e;
         }
     }
 
