@@ -18,7 +18,7 @@ public class FileExceptionHandler {
     @ExceptionHandler(S3Exception.class)
     public ResponseEntity<Object> handleS3Exception(S3Exception e) {
         Map<String, String> body = new HashMap<>();
-        body.put("message", "Failed to upload file");
+        body.put("error", "Failed to upload file");
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -26,7 +26,7 @@ public class FileExceptionHandler {
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity<Object> handleSizeLimitExceededException(SizeLimitExceededException e) {
         Map<String, String> body = new HashMap<>();
-        body.put("message", "File is too large");
+        body.put("error", "File is too large");
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -34,7 +34,7 @@ public class FileExceptionHandler {
     @ExceptionHandler(InvalidFileNameException.class)
     public ResponseEntity<Object> handleInvalidFileNameException(InvalidFileNameException e) {
         Map<String, String> body = new HashMap<>();
-        body.put("message", e.getMessage());
+        body.put("error", e.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

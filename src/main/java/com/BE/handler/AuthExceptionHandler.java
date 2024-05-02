@@ -16,7 +16,7 @@ public class AuthExceptionHandler {
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex) {
 
         Map<String, String> body = new HashMap<>();
-        body.put("message", "Invalid username or password");
+        body.put("error", "Invalid username or password");
 
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
