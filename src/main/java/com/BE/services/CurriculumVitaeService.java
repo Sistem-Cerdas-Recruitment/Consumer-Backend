@@ -20,6 +20,9 @@ import com.BE.services.storage.BucketService;
 public class CurriculumVitaeService {
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     CurriculumVitaeRepository curriculumVitaeRepository;
 
     @Autowired
@@ -36,7 +39,8 @@ public class CurriculumVitaeService {
         }
     }
 
-    public String get(UUID id, User user) {
+    public String get(UUID id, String username) {
+        User user = userService.getUserByEmail(username);
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
 
@@ -48,12 +52,14 @@ public class CurriculumVitaeService {
 
     }
 
-    public Page<CurriculumVitae> get(User user) {
+    public Page<CurriculumVitae> get(String username) {
+        User user = userService.getUserByEmail(username);
         return curriculumVitaeRepository.findAllByUser(user,
-                PageRequest.of(0, 3, Sort.by(Sort.Direction.ASC, "createdAt")));
+                PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdAt")));
     }
 
-    public byte[] view(UUID id, User user) {
+    public byte[] view(UUID id, String username) {
+        User user = userService.getUserByEmail(username);
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
         if (cv.getUser().getId().equals(user.getId())) {
@@ -63,7 +69,8 @@ public class CurriculumVitaeService {
         }
     }
 
-    public CurriculumVitae save(MultipartFile file, User user) {
+    public CurriculumVitae save(MultipartFile file, String username) {
+        User user = userService.getUserByEmail(username);
         String fileName = bucketService.put(file, user.getName());
 
         CurriculumVitae cv = CurriculumVitae.builder()

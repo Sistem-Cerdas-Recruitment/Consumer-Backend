@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.BE.dto.file.FileResponseDTO;
 import com.BE.dto.file.MultipleFileResponseDTO;
 import com.BE.entities.CurriculumVitae;
-import com.BE.entities.User;
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.storage.BucketService;
 
@@ -41,8 +40,7 @@ public class FileController {
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = user.getName();
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         try {
             String response = bucketService.put(file, username);
@@ -66,8 +64,8 @@ public class FileController {
             throw new InvalidFileNameException(file.getOriginalFilename(), "Invalid file format. Only PDF files are allowed.");
         }
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurriculumVitae cv = curriculumVitaeService.save(file, user);
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurriculumVitae cv = curriculumVitaeService.save(file, username);
         FileResponseDTO body = FileResponseDTO.builder()
                 .id(cv.getId())
                 .fileName(cv.getOriginalFileName())
@@ -78,15 +76,15 @@ public class FileController {
 
     @GetMapping(value = { "/cv/get", "/cv/get/{id}" })
     public ResponseEntity<Object> getCV(@PathVariable Optional<String> id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (id.isPresent()) {
-            String cvUrl = curriculumVitaeService.get(UUID.fromString(id.get()), user);
+            String cvUrl = curriculumVitaeService.get(UUID.fromString(id.get()), username);
             Map<String, String> body = new HashMap<>();
             body.put("data", cvUrl);
             return ResponseEntity.ok(body);
         } else {
-            Page<CurriculumVitae> cvPage = curriculumVitaeService.get(user);
+            Page<CurriculumVitae> cvPage = curriculumVitaeService.get(username);
             MultipleFileResponseDTO body = new MultipleFileResponseDTO(cvPage);
             return ResponseEntity.ok(body);
         }
@@ -94,8 +92,8 @@ public class FileController {
 
     @GetMapping("/cv/view/{id}")
     public ResponseEntity<Object> viewCV(@PathVariable UUID id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        byte[] content = curriculumVitaeService.view(id, user);
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        byte[] content = curriculumVitaeService.view(id, username);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         return ResponseEntity.ok().headers(headers).body(content);

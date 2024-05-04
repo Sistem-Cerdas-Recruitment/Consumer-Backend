@@ -30,6 +30,7 @@ public class AuthController {
         AuthResponseDTO response = authService.register(registerRequest);
         ResponseCookie cookie = ResponseCookie.from("biskuat", response.getToken())
                 .httpOnly(true)
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(60 * 60 * 24 * 30)
                 .build();
@@ -44,6 +45,7 @@ public class AuthController {
         AuthResponseDTO response = authService.authenticate(authRequest);
         ResponseCookie cookie = ResponseCookie.from("biskuat", response.getToken())
                 .httpOnly(true)
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(60 * 60 * 24 * 30)
                 .build();
@@ -52,6 +54,20 @@ public class AuthController {
         headers.add("Set-Cookie", cookie.toString());
         return ResponseEntity.ok().headers(headers).body(response);
 
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponseDTO> refresh() {
+        AuthResponseDTO response = authService.refresh();
+        ResponseCookie cookie = ResponseCookie.from("biskuat", response.getToken())
+                .httpOnly(true)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 30)
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Set-Cookie", cookie.toString());
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @PostMapping("/logout")

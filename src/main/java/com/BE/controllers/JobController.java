@@ -21,7 +21,6 @@ import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
-import com.BE.entities.User;
 import com.BE.services.JobService;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -50,8 +49,8 @@ public class JobController {
     @GetMapping("{jobId}/application")
     @RolesAllowed("RECRUITER")
     public ResponseEntity<?> getApplication(@PathVariable UUID jobId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<JobApplication> jobApplications = jobService.findApplications(jobId, user);
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<JobApplication> jobApplications = jobService.findApplications(jobId, username);
         Map<String, Object> body = new HashMap<>();
         body.put("data", jobApplications);
 
@@ -61,8 +60,8 @@ public class JobController {
     @PostMapping("/post")
     @RolesAllowed("RECRUITER")
     public ResponseEntity<?> postJob(@RequestBody @Validated PostJobRequestDTO postJobRequestDTO) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Job job = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(), user);
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Job job = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(), username);
         PostJobResponseDTO body = PostJobResponseDTO.builder()
                 .message("Job posted successfully")
                 .job(job)
@@ -73,8 +72,8 @@ public class JobController {
     @PostMapping("/apply")
     @RolesAllowed("CANDIDATE")
     public ResponseEntity<?> applyForJob(@RequestBody JobApplicationRequestDTO body) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        JobApplication jobApplication =  jobService.apply(body.getJobId(), body.getCvId(), user);
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        JobApplication jobApplication =  jobService.apply(body.getJobId(), body.getCvId(), username);
         return ResponseEntity.ok().body(jobApplication);
     }
 

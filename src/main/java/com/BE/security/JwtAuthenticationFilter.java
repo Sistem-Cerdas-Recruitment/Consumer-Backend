@@ -1,14 +1,14 @@
 package com.BE.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,9 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private final JwtService jwtService;
-
-    @Autowired
-    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -68,12 +65,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             if(userEmail != null || SecurityContextHolder.getContext().getAuthentication() == null){
-                final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+                List<SimpleGrantedAuthority> roles = jwtService.extractRoles(jwt);
 
-                if(jwtService.isTokenValid(jwt, userDetails)){
+                if(jwtService.isTokenValid(jwt, userEmail)){
                     // set authentication
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
+                            userEmail, null, roles);
                     authenticationToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                     );

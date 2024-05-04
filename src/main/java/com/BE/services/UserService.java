@@ -1,5 +1,7 @@
 package com.BE.services;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +20,11 @@ public class UserService {
     }
 
     public User getUser(String name) {
-        return userRepository.findByName(name).orElse(null);
+        return userRepository.findByName(name).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     public User getUserByEmail(String email){
-        return userRepository.findByEmail(email).orElse(null);
+        return userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     public void saveUser(User user) {

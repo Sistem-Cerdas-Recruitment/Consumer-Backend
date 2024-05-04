@@ -22,6 +22,9 @@ import com.BE.repositories.JobRepository;
 public class JobService {
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     JobRepository jobRepository;
 
     @Autowired
@@ -38,7 +41,8 @@ public class JobService {
         return jobRepository.findAll();
     }
 
-    public List<JobApplication> findApplications(UUID jobId, User user) {
+    public List<JobApplication> findApplications(UUID jobId, String username) {
+        User user = userService.getUserByEmail(username);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
         if (job.getUser().getId().equals(user.getId())) {
             return jobApplicationRepository.findByJob(job);
@@ -47,7 +51,8 @@ public class JobService {
         }
     }
 
-    public Job createJob(String title, String description, User user) {
+    public Job createJob(String title, String description, String username) {
+        User user = userService.getUserByEmail(username);
         Job job = Job.builder()
                 .title(title)
                 .description(description)
@@ -57,7 +62,8 @@ public class JobService {
         return jobRepository.save(job);
     }
 
-    public JobApplication apply(UUID jobId, UUID cvId, User user) {
+    public JobApplication apply(UUID jobId, UUID cvId, String username) {
+        User user = userService.getUserByEmail(username);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
         Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
                 user);

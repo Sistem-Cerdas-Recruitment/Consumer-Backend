@@ -3,6 +3,8 @@ package com.BE.services.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +57,12 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
 
         User user = userService.getUserByEmail(authRequest.getEmail());
+        return AuthResponseDTO.builder().token(jwtService.generateToken(user)).build();
+    }
+
+    public AuthResponseDTO refresh() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getUserByEmail(username);
         return AuthResponseDTO.builder().token(jwtService.generateToken(user)).build();
     }
 }
