@@ -1,6 +1,6 @@
 runtime: java21
 env: standard
-instance_class: F1  # Smallest instance for development to minimize costs.
+instance_class: F2  # Smallest instance for development to minimize costs.
 
 automatic_scaling:  # Use automatic scaling for development to manage instances more flexibly.
   max_instances: 1  # Limit instances to minimize costs.
