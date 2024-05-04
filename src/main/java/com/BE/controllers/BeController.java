@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.BE.dto.CurriculumVitaeDTO;
 import com.BE.entities.User;
 import com.BE.services.AntiCheatService;
-import com.BE.services.CVProcessorService;
 import com.BE.services.UserService;
 import com.BE.services.kafka.KafkaProducer;
 import com.BE.services.kafka.KafkaTopicManager;
@@ -35,9 +33,6 @@ public class BeController {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    CVProcessorService cvProcessorService;
 
     @Autowired
     BucketService bucketService;
@@ -87,16 +82,5 @@ public class BeController {
     public String registerTopic(@RequestBody String topicName) {
         kafkaTopicManager.createTopic(topicName);
         return "Topic registered successfully!";
-    }
-
-    @PostMapping("/processCV")
-    public String processCV(@RequestBody CurriculumVitaeDTO cv) {
-
-        try {
-            cvProcessorService.processCV(cv);
-            return "CV processed successfully!";
-        } catch (Exception e) {
-            return "Failed to process CV: " + e;
-        }
     }
 }
