@@ -1,5 +1,6 @@
 package com.BE.services;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -7,6 +8,9 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.BE.constants.Evaluation;
+import com.BE.constants.JobApplicationStatus;
+import com.BE.constants.JobStatus;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
@@ -30,24 +34,39 @@ public class JobService {
         return jobRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Job not found"));
     }
 
+    public List<Job> findAll() {
+        return jobRepository.findAll();
+    }
+
+    public List<JobApplication> findApplications(UUID jobId, User user) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
+        if (job.getUser().getId().equals(user.getId())) {
+            return jobApplicationRepository.findByJob(job);
+        } else {
+            throw new IllegalArgumentException("You are not authorized to access this resource");
+        }
+    }
+
     public Job createJob(String title, String description, User user) {
         Job job = Job.builder()
                 .title(title)
                 .description(description)
                 .user(user)
+                .status(JobStatus.OPEN)
                 .build();
         return jobRepository.save(job);
     }
 
     public JobApplication apply(UUID jobId, UUID cvId, User user) {
-        Optional<Job> job = jobRepository.findById(jobId);
-        Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobIdAndUserId(jobId,
-                user.getId());
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
+        Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
+                user);
         CurriculumVitae cv = curriculumVitaeService.find(cvId, user);
 
-        if (existingJobApplication.isEmpty() && job.isPresent()) {
+        if (existingJobApplication.isEmpty()) {
             JobApplication jobApplication = JobApplication.builder()
-                    .job(job.get())
+                    .status(JobApplicationStatus.PENDING)
+                    .job(job)
                     .user(user)
                     .cv(cv)
                     .build();
@@ -58,5 +77,13 @@ public class JobService {
             throw new NoSuchElementException("Job not found");
 
         }
+    }
+
+    public JobApplication updateJobApplication(UUID applicationId, JobApplicationStatus status, Evaluation evaluation) {
+        JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+        jobApplication.setStatus(status);
+        jobApplication.setEvaluation(evaluation);
+        return jobApplicationRepository.save(jobApplication);
     }
 }

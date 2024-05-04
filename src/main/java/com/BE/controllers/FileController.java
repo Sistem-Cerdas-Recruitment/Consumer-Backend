@@ -83,7 +83,7 @@ public class FileController {
         if (id.isPresent()) {
             String cvUrl = curriculumVitaeService.get(UUID.fromString(id.get()), user);
             Map<String, String> body = new HashMap<>();
-            body.put("url", cvUrl);
+            body.put("data", cvUrl);
             return ResponseEntity.ok(body);
         } else {
             Page<CurriculumVitae> cvPage = curriculumVitaeService.get(user);

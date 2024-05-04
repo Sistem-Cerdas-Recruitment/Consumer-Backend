@@ -1,11 +1,11 @@
 package com.BE.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.BE.dto.InterviewChatLogDTO;
+import com.BE.constants.JobApplicationStatus;
+import com.BE.dto.antiCheat.AntiCheatEvaluationDTO;
+import com.BE.dto.antiCheat.AntiCheatResultDTO;
 import com.BE.services.kafka.KafkaProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,12 +18,19 @@ public class AntiCheatService {
     @Autowired
     private KafkaProducer kafkaProducer;
 
-    public void checkForCheating(List<InterviewChatLogDTO> body) {
+    @Autowired
+    private JobService jobService;
+
+    public void checkForCheating(AntiCheatEvaluationDTO body) {
         try {
             String payload = objectMapper.writeValueAsString(body);
             kafkaProducer.sendMessage("ai-detector", payload);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send message: " + e.getMessage());
         }
+    }
+
+    public void updateResult(AntiCheatResultDTO body) {
+        jobService.updateJobApplication(body.getJobApplicationId(), JobApplicationStatus.EVALUATED, body.getEvaluation());
     }
 }
