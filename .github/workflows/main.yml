@@ -17,10 +17,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Cloud SDK
+      - name: Set up Cloud Auth
         uses: "google-github-actions/auth@v1"
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v1'
+      
+      - name: Configure Docker Client of Gcloud
+        run:  |-
+          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker asia-docker.pkg.dev --quiet
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -31,14 +39,29 @@ jobs:
       - name: Set Up App
         run: |
           echo '${{ secrets.ENV }}' >> src/main/resources/application.properties
-          mvn clean install -DskipTests
+          
+      - name: Set Up Cloud Run App
+        run: |
+          mvn spring-boot:build-image -Dspring-boot.build-image.imageName=asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
+          docker push asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
+      
+      # - name: Deploy to App Engine
+      #   id: deploy
+      #   uses: google-github-actions/deploy-appengine@v2
+      #   with:
+      #     deliverables: app.yaml
+      #     project_id: ta-2-sistem-cerdas
 
-      - name: Deploy to App Engine
-        id: deploy
-        uses: google-github-actions/deploy-appengine@v2
+      - name: Deploy to Cloud run
+        id: deploy-cloudrun-test
+        uses: google-github-actions/deploy-cloudrun@v1
         with:
-          deliverables: app.yaml
+          service: ta-2-sistem-cerdas-be
+          image: asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
           project_id: ta-2-sistem-cerdas
+          region: asia-southeast2
 
       - name: Test
-        run: curl "${{ steps.deploy.outputs.url }}/api/hello"
+        run: |
+
+          curl "${{ steps.deploy-cloudrun-test.outputs.url }}/api/hello"
