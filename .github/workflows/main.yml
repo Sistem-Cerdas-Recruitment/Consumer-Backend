@@ -54,12 +54,14 @@ jobs:
 
       - name: Deploy to Cloud run
         id: deploy-cloudrun-test
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@main
         with:
           service: ta-2-sistem-cerdas-be
           image: asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
           project_id: ta-2-sistem-cerdas
           region: asia-southeast2
+          platform: managed
+          allow_unauthenticated: true
 
       - name: Test
         run: |
