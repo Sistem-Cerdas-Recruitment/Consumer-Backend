@@ -1,11 +1,10 @@
 runtime: java21
 env: standard
-instance_class: B2  # Smallest instance for development to minimize costs.
+instance_class: F2 # Smallest instance for development to minimize costs.
 
-manual_scaling:
-  instances: 1
-
-# automatic_scaling:  # Use automatic scaling for development to manage instances more flexibly.
-#   max_instances: 1  # Limit instances to minimize costs.
-#   min_idle_instances: 1  # Scale down to 0 instances when not in use.
-#   max_idle_instances: 1  # Limit to 1 to prevent cost from idle instances.
+# manual_scaling:
+#   instances: 1
+automatic_scaling:  # Use automatic scaling for development to manage instances more flexibly.
+  max_instances: 1  # Limit instances to minimize costs.
+  min_idle_instances: 0  # Scale down to 0 instances when not in use.
+  max_idle_instances: 1  # Limit to 1 to prevent cost from idle instances.
