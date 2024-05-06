@@ -40,28 +40,15 @@ jobs:
         run: |
           echo '${{ secrets.ENV }}' >> src/main/resources/application.properties
           
-      - name: Set Up Cloud Run App
+      - name: Set Up Image
         run: |
           mvn spring-boot:build-image -Dspring-boot.build-image.imageName=asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
           docker push asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
-      
-      # - name: Deploy to App Engine
-      #   id: deploy
-      #   uses: google-github-actions/deploy-appengine@v2
-      #   with:
-      #     deliverables: app.yaml
-      #     project_id: ta-2-sistem-cerdas
 
-      - name: Deploy to Cloud run
-        id: deploy-cloudrun-test
-        uses: google-github-actions/deploy-cloudrun@main
-        with:
-          service: ta-2-sistem-cerdas-be
-          image: asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
-          project_id: ta-2-sistem-cerdas
-          region: asia-southeast2
-
-      - name: Test
+      - name: Deploy to Cloud run v2
+        id: deploy-cloudrun
         run: |
-
-          curl "${{ steps.deploy-cloudrun-test.outputs.url }}/api/hello"
+          gcloud run deploy ta-2-sistem-cerdas-be \
+          --image=asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be \
+          --platform=managed --region=asia-southeast2 --allow-unauthenticated \
+          --min-instances=1 --max-instances=2 --memory=1Gi --cpu=1 --timeout=300s
