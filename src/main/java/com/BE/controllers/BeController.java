@@ -83,4 +83,10 @@ public class BeController {
         kafkaTopicManager.createTopic(topicName);
         return "Topic registered successfully!";
     }
+
+    @PostMapping("/clearTopic")
+    public String clearTopic(@RequestBody String topicName) {
+        kafkaTopicManager.clearMsg(topicName);
+        return "Topic cleared successfully!";
+    }
 }

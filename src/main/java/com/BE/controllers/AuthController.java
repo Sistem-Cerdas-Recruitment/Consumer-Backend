@@ -62,6 +62,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("biskuat", response.getToken())
                 .httpOnly(true)
                 .path("/")
+                .sameSite("Strict")
                 .maxAge(60 * 60 * 24 * 30)
                 .build();
         HttpHeaders headers = new HttpHeaders();
