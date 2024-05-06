@@ -60,8 +60,6 @@ jobs:
           image: asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
           project_id: ta-2-sistem-cerdas
           region: asia-southeast2
-          platform: managed
-          allow_unauthenticated: true
 
       - name: Test
         run: |

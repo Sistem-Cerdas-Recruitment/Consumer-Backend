@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.dto.job.JobApplicationRequestDTO;
+import com.BE.dto.job.JobApplicationResultDTO;
+import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.entities.Job;
@@ -34,9 +36,11 @@ public class JobController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllJobs() {
-        List<Job> jobs = jobService.findAll();
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<JobResultDTO> jobs = jobService.findAllOpenJobs(username);
         Map<String, Object> body = new HashMap<>();
         body.put("data", jobs);
+        // body.put("userid", jobs.get(0).getUser().getId());
 
         return ResponseEntity.ok(body);
     }
@@ -50,7 +54,7 @@ public class JobController {
     @RolesAllowed("RECRUITER")
     public ResponseEntity<?> getApplication(@PathVariable UUID jobId) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<JobApplication> jobApplications = jobService.findApplications(jobId, username);
+        List<JobApplicationResultDTO> jobApplications = jobService.findApplications(jobId, username);
         Map<String, Object> body = new HashMap<>();
         body.put("data", jobApplications);
 

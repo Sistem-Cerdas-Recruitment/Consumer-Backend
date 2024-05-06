@@ -35,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         String jwt = null;
         final String userEmail;
+        List<SimpleGrantedAuthority> roles;
         final Cookie[] cookies = request.getCookies();
 
         if(cookies == null){
@@ -53,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // jwt = authorizationHeader.substring(7);
             try{
                 userEmail = jwtService.extractUsername(jwt);
+                roles = jwtService.extractRoles(jwt);
             } catch (Exception e){
                 response
                     .addHeader("Set-Cookie", ResponseCookie.from("biskuat", "")
@@ -65,7 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             if(userEmail != null || SecurityContextHolder.getContext().getAuthentication() == null){
-                List<SimpleGrantedAuthority> roles = jwtService.extractRoles(jwt);
 
                 if(jwtService.isTokenValid(jwt, userEmail)){
                     // set authentication

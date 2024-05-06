@@ -10,11 +10,14 @@ import org.springframework.stereotype.Repository;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
 import com.BE.entities.User;
+import com.BE.repositories.projections.JobApplicationProjection;
 
 @Repository
 public interface JobApplicationRepository extends JpaRepository<JobApplication, UUID> {
 
     Optional<JobApplication> findByJobAndUser(Job job, User user);
 
-    List<JobApplication> findByJob(Job job);
+    List<JobApplicationProjection> findAllByUser(User user);
+
+    List<JobApplicationProjection> findByJob(Job job);
 }
