@@ -1,10 +1,10 @@
 package com.BE.services;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
@@ -40,11 +40,11 @@ public class CurriculumVitaeService {
     }
 
     public String get(UUID id, String username) {
-        User user = userService.getUserByEmail(username);
+        // User user = userService.getUserByEmail(username);
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
 
-        if (cv.getUser().getId().equals(user.getId())) {
+        if (cv.getUser().getUsername().equals(username)) {
             return bucketService.createPresignedGetUrl(cv.getFileName());
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
@@ -52,10 +52,10 @@ public class CurriculumVitaeService {
 
     }
 
-    public Page<CurriculumVitae> get(String username) {
+    public List<CurriculumVitae> get(String username) {
         User user = userService.getUserByEmail(username);
         return curriculumVitaeRepository.findAllByUser(user,
-                PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdAt")));
+                PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "isDefault", "createdAt")));
     }
 
     public byte[] view(UUID id, String username) {
@@ -72,12 +72,18 @@ public class CurriculumVitaeService {
     public CurriculumVitae save(MultipartFile file, String username) {
         User user = userService.getUserByEmail(username);
         String fileName = bucketService.put(file, user.getName());
+        List<CurriculumVitae> cvs = curriculumVitaeRepository.findAllByUser(user,
+                PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "isDefault", "createdAt")));
 
         CurriculumVitae cv = CurriculumVitae.builder()
                 .originalFileName(file.getOriginalFilename())
                 .fileName(fileName)
                 .user(user)
                 .build();
+
+        if(cvs.isEmpty()) {
+            cv.setDefault(true);
+        }
 
         return curriculumVitaeRepository.save(cv);
     }

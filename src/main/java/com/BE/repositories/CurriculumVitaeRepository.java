@@ -1,9 +1,9 @@
 package com.BE.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
@@ -18,5 +18,5 @@ public interface CurriculumVitaeRepository extends JpaRepository<CurriculumVitae
 
     public Optional<CurriculumVitae> findByFileName(String fileName);
 
-    public Page<CurriculumVitae> findAllByUser(User user, Pageable pageable);
+    public List<CurriculumVitae> findAllByUser(User user, Pageable pageable);
 }

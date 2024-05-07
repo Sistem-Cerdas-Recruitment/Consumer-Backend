@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,6 +60,18 @@ public class JobController {
         body.put("data", jobApplications);
 
         return ResponseEntity.ok(body);
+    }
+
+    @GetMapping("{jobId}/application/{applicationId}")
+    public ResponseEntity<?> getApplication(@PathVariable UUID jobId, @PathVariable UUID applicationId) {
+        // TODO: Implement this
+        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RECRUITER"))) {
+            
+        } else{
+
+
+        }
+        return null;
     }
 
     @PostMapping("/post")

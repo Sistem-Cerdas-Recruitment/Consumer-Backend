@@ -16,4 +16,5 @@ public class FileResponseDTO {
     private UUID id;
     private String fileName;
     private LocalDateTime uploadDate;
+    private boolean isDefault;
 }

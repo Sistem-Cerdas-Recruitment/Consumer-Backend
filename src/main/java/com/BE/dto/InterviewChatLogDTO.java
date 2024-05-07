@@ -21,4 +21,20 @@ public class InterviewChatLogDTO {
 
     @JsonProperty("letter_click_counts")
     private Map<String, Integer> letterClickCounts;
+
+    /*
+     *  Evaluation
+     */
+
+    @JsonProperty("predicted_class")
+    private String predictedClass;
+
+    @JsonProperty("confidence")
+    private String confidence;
+
+    @JsonProperty("secondary_model_prediction")
+    private double secondaryModelPrediction;
+
+    @JsonProperty("main_model_probability")
+    private String mainModelProbability;
 }

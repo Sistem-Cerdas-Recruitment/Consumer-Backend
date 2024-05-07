@@ -17,6 +17,7 @@ import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
 import com.BE.dto.InterviewChatLogDTO;
 import com.BE.dto.antiCheat.EvaluationDTO;
+import com.BE.dto.job.JobApplicationDTO;
 import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.entities.CurriculumVitae;
@@ -25,7 +26,7 @@ import com.BE.entities.JobApplication;
 import com.BE.entities.User;
 import com.BE.repositories.JobApplicationRepository;
 import com.BE.repositories.JobRepository;
-import com.BE.repositories.projections.JobApplicationProjection;
+import com.BE.repositories.projections.JobApplicationProjection.JobApplicationUserJobProjection;
 import com.BE.repositories.projections.JobProjection;
 
 @Service
@@ -51,8 +52,9 @@ public class JobService {
         User user = userService.getUserByEmail(username);
         List<JobProjection> jobs = jobRepository.findAllByStatus(JobStatus.OPEN,
                 PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
-        Map<UUID, JobApplicationProjection> jobApplications = jobApplicationRepository.findAllByUser(user).stream()
-                .collect(Collectors.toMap(JobApplicationProjection::getJobId, Function.identity()));
+        Map<UUID, JobApplicationUserJobProjection> jobApplications = jobApplicationRepository.findAllByUser(user)
+                .stream()
+                .collect(Collectors.toMap(JobApplicationUserJobProjection::getJobId, Function.identity()));
         List<JobResultDTO> response = jobs.stream().map(job -> {
             JobResultDTO jobResponseDTO = new JobResultDTO();
             jobResponseDTO.setId(job.getId());
@@ -76,6 +78,8 @@ public class JobService {
                         jobApplicationResultDTO.setId(jobApplication.getId());
                         jobApplicationResultDTO.setJobId(jobApplication.getJobId());
                         jobApplicationResultDTO.setJobTitle(jobApplication.getJob().getTitle());
+                        jobApplicationResultDTO.setRecruiterId(jobApplication.getJob().getUser().getId());
+                        jobApplicationResultDTO.setRecruiterName(jobApplication.getJob().getUser().getName());
                         jobApplicationResultDTO.setStatus(jobApplication.getStatus());
                         jobApplicationResultDTO.setUserId(jobApplication.getUser().getId());
                         jobApplicationResultDTO.setUserName(jobApplication.getUser().getName());
@@ -85,6 +89,24 @@ public class JobService {
         } else {
             throw new IllegalArgumentException("You are not authorized to access this resource");
         }
+    }
+
+    public List<JobApplicationResultDTO> findApplications(String username) {
+        User user = userService.getUserByEmail(username);
+        List<JobApplicationResultDTO> jobApplications = jobApplicationRepository.findAllByUser(user).stream()
+                .map(jobApplication -> {
+                    JobApplicationResultDTO jobApplicationResultDTO = new JobApplicationResultDTO();
+                    jobApplicationResultDTO.setId(jobApplication.getId());
+                    jobApplicationResultDTO.setJobId(jobApplication.getJobId());
+                    jobApplicationResultDTO.setJobTitle(jobApplication.getJob().getTitle());
+                    jobApplicationResultDTO.setRecruiterId(jobApplication.getJob().getUser().getId());
+                    jobApplicationResultDTO.setRecruiterName(jobApplication.getJob().getUser().getName());
+                    jobApplicationResultDTO.setStatus(jobApplication.getStatus());
+                    jobApplicationResultDTO.setUserId(jobApplication.getUser().getId());
+                    jobApplicationResultDTO.setUserName(jobApplication.getUser().getName());
+                    return jobApplicationResultDTO;
+                }).collect(Collectors.toList());
+        return jobApplications;
     }
 
     public Job createJob(String title, String description, String username) {
@@ -98,23 +120,47 @@ public class JobService {
         return jobRepository.save(job);
     }
 
-    public JobApplication getCandidateJobApplication(UUID applicationId, String username) {
-        User user = userService.getUserByEmail(username);
+    public JobApplicationDTO getCandidateJobApplication(UUID applicationId, String username) {
         JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new NoSuchElementException("Job application not found"));
-        if (jobApplication.getUser().getId().equals(user.getId())) {
-            return jobApplication;
+        JobApplicationDTO jobApplicationDTO = JobApplicationDTO.builder()
+                .id(jobApplication.getId())
+                .status(jobApplication.getStatus())
+                .jobId(jobApplication.getJob().getId())
+                .jobTitle(jobApplication.getJob().getTitle())
+                .recruiterId(jobApplication.getJob().getUser().getId())
+                .recruiterName(jobApplication.getJob().getUser().getName())
+                .userId(jobApplication.getUser().getId())
+                .userName(jobApplication.getUser().getName())
+                .fileName(jobApplication.getCv().getFileName())
+                .cvUrl(curriculumVitaeService.get(applicationId, username))
+                .build();
+        if (jobApplication.getUser().getEmail().equals(username)) {
+            return jobApplicationDTO;
         } else {
             throw new IllegalArgumentException("You are not authorized to access this resource");
         }
     }
 
-    public JobApplication getRecruiterJobApplication(UUID applicationId, String username) {
+    public JobApplicationDTO getRecruiterJobApplication(UUID applicationId, String username) {
         JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new NoSuchElementException("Job application not found"));
 
+        JobApplicationDTO jobApplicationDTO = JobApplicationDTO.builder()
+                .id(jobApplication.getId())
+                .status(jobApplication.getStatus())
+                .jobId(jobApplication.getJob().getId())
+                .jobTitle(jobApplication.getJob().getTitle())
+                .recruiterId(jobApplication.getJob().getUser().getId())
+                .recruiterName(jobApplication.getJob().getUser().getName())
+                .userId(jobApplication.getUser().getId())
+                .userName(jobApplication.getUser().getName())
+                .fileName(jobApplication.getCv().getFileName())
+                .cvUrl(curriculumVitaeService.get(applicationId, username))
+                .build();
+
         if (jobApplication.getJob().getUser().getEmail().equals(username)) {
-            return jobApplication;
+            return jobApplicationDTO;
         } else {
             throw new IllegalArgumentException("You are not authorized to access this resource");
         }

@@ -4,10 +4,12 @@ import java.util.UUID;
 
 import com.BE.constants.JobApplicationStatus;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class JobApplicationResultDTO {
+@Builder
+public class JobApplicationDTO {
     private UUID id;
     private JobApplicationStatus status;
     private UUID jobId;
@@ -16,4 +18,6 @@ public class JobApplicationResultDTO {
     private String recruiterName;
     private UUID userId;
     private String userName;
+    private String fileName;
+    private String cvUrl;
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.hibernate.annotations.Type;
 
-import com.BE.constants.Evaluation;
 import com.BE.constants.JobApplicationStatus;
 import com.BE.dto.InterviewChatLogDTO;
 
@@ -27,8 +26,6 @@ import lombok.NoArgsConstructor;
 public class JobApplication extends BaseEntity{
 
     private JobApplicationStatus status;
-
-    private Evaluation evaluation;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")

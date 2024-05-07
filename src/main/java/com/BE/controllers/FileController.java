@@ -1,13 +1,13 @@
 package com.BE.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -84,7 +84,7 @@ public class FileController {
             body.put("data", cvUrl);
             return ResponseEntity.ok(body);
         } else {
-            Page<CurriculumVitae> cvPage = curriculumVitaeService.get(username);
+            List<CurriculumVitae> cvPage = curriculumVitaeService.get(username);
             MultipleFileResponseDTO body = new MultipleFileResponseDTO(cvPage);
             return ResponseEntity.ok(body);
         }
