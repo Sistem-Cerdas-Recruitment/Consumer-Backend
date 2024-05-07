@@ -52,4 +52,4 @@ jobs:
           gcloud run deploy ta-2-sistem-cerdas-be \
           --image=asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be \
           --platform=managed --region=asia-southeast2 --allow-unauthenticated \
-          --min-instances=1 --max-instances=2 --memory=1Gi --cpu=1 --timeout=300s
+          --min-instances=1 --max-instances=1 --memory=1Gi --cpu=1 --timeout=300s
