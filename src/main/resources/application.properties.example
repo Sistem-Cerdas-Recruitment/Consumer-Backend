@@ -3,10 +3,10 @@ server.port=8080
 spring.jpa.generate-ddl=true
 spring.jpa.hibernate.ddl-auto=update
 
-kafka.bootstrap-servers=35.247.180.173:9092
+kafka.bootstrap-servers=localhost:9092
 
-jwt.secret=supersecretdkaszjhfoino2iuhin2i34232432oo32ni41n4jn52t09t852
-spring.datasource.url=jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+jwt.secret=secret
+spring.datasource.url=jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/user
 spring.datasource.schema=public
-spring.datasource.username=postgres.dnsrvqqydxvhqjlanmqo
-spring.datasource.password=hJ8dh6KWHwG3n7g
+spring.datasource.username=postgres
+spring.datasource.password=password

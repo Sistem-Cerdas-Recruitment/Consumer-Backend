@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +25,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    @Value("${service.x-api-key}")
+    private String xApiKey;
+
     @Autowired
     private final JwtService jwtService;
 
@@ -32,51 +36,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        
+
         String jwt = null;
         final String userEmail;
         List<SimpleGrantedAuthority> roles;
         final Cookie[] cookies = request.getCookies();
+        final String requestXApiKey = request.getHeader("x-api-key");
 
-        if(cookies == null){
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if (xApiKey.equals(requestXApiKey)) {
+            roles = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    null, null, roles);
+            authenticationToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        } 
 
-        for(Cookie c : cookies){
-            if(c.getName().equals("biskuat")){
-                jwt = c.getValue();
-                break;
+        if(cookies != null){
+            for (Cookie c : cookies) {
+                if (c.getName().equals("biskuat")) {
+                    jwt = c.getValue();
+                    break;
+                }
             }
         }
 
-        if(jwt != null) {
+        if (jwt != null) {
             // jwt = authorizationHeader.substring(7);
-            try{
+            try {
                 userEmail = jwtService.extractUsername(jwt);
                 roles = jwtService.extractRoles(jwt);
-            } catch (Exception e){
+            } catch (Exception e) {
                 response
-                    .addHeader("Set-Cookie", ResponseCookie.from("biskuat", "")
-                    .httpOnly(true)
-                    .path("/")
-                    .maxAge(0)
-                    .build().toString());
+                        .addHeader("Set-Cookie", ResponseCookie.from("biskuat", "")
+                                .httpOnly(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build().toString());
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            if(userEmail != null || SecurityContextHolder.getContext().getAuthentication() == null){
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                if(jwtService.isTokenValid(jwt, userEmail)){
+                if (jwtService.isTokenValid(jwt, userEmail)) {
                     // set authentication
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userEmail, null, roles);
                     authenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                            new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                } 
+                }
             }
             filterChain.doFilter(request, response);
         } else {
