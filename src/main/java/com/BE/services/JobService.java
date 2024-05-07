@@ -13,9 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.BE.constants.Evaluation;
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
+import com.BE.dto.InterviewChatLogDTO;
+import com.BE.dto.antiCheat.EvaluationDTO;
 import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.entities.CurriculumVitae;
@@ -48,7 +49,8 @@ public class JobService {
 
     public List<JobResultDTO> findAllOpenJobs(String username) {
         User user = userService.getUserByEmail(username);
-        List<JobProjection> jobs = jobRepository.findAllByStatus(JobStatus.OPEN, PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
+        List<JobProjection> jobs = jobRepository.findAllByStatus(JobStatus.OPEN,
+                PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
         Map<UUID, JobApplicationProjection> jobApplications = jobApplicationRepository.findAllByUser(user).stream()
                 .collect(Collectors.toMap(JobApplicationProjection::getJobId, Function.identity()));
         List<JobResultDTO> response = jobs.stream().map(job -> {
@@ -96,6 +98,28 @@ public class JobService {
         return jobRepository.save(job);
     }
 
+    public JobApplication getCandidateJobApplication(UUID applicationId, String username) {
+        User user = userService.getUserByEmail(username);
+        JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+        if (jobApplication.getUser().getId().equals(user.getId())) {
+            return jobApplication;
+        } else {
+            throw new IllegalArgumentException("You are not authorized to access this resource");
+        }
+    }
+
+    public JobApplication getRecruiterJobApplication(UUID applicationId, String username) {
+        JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+
+        if (jobApplication.getJob().getUser().getEmail().equals(username)) {
+            return jobApplication;
+        } else {
+            throw new IllegalArgumentException("You are not authorized to access this resource");
+        }
+    }
+
     public JobApplication apply(UUID jobId, UUID cvId, String username) {
         User user = userService.getUserByEmail(username);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
@@ -119,11 +143,22 @@ public class JobService {
         }
     }
 
-    public JobApplication updateJobApplication(UUID applicationId, JobApplicationStatus status, Evaluation evaluation) {
+    public JobApplication updateJobApplication(UUID applicationId, JobApplicationStatus status,
+            List<EvaluationDTO> evaluations) {
         JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+        if (evaluations.size() != jobApplication.getInterviewChatLogs().size()) {
+            throw new IllegalArgumentException("Invalid number of evaluations");
+        }
         jobApplication.setStatus(status);
-        jobApplication.setEvaluation(evaluation);
+        List<InterviewChatLogDTO> interviewChatLogs = jobApplication.getInterviewChatLogs();
+
+        for (int i = 0; i < evaluations.size(); i++) {
+            interviewChatLogs.get(i).setPredictedClass(evaluations.get(i).getPredictedClass());
+            interviewChatLogs.get(i).setConfidence(evaluations.get(i).getConfidence());
+            interviewChatLogs.get(i).setSecondaryModelPrediction(evaluations.get(i).getSecondaryModelPrediction());
+            interviewChatLogs.get(i).setMainModelProbability(evaluations.get(i).getMainModelProbability());
+        }
         return jobApplicationRepository.save(jobApplication);
     }
 }
