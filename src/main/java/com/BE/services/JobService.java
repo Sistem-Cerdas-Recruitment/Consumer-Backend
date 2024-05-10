@@ -51,7 +51,7 @@ public class JobService {
     public List<JobResultDTO> findAllOpenJobs(String username) {
         User user = userService.getUserByEmail(username);
         List<JobProjection> jobs = jobRepository.findAllByStatus(JobStatus.OPEN,
-                PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "updatedAt")));
         Map<UUID, JobApplicationUserJobProjection> jobApplications = jobApplicationRepository.findAllByUser(user)
                 .stream()
                 .collect(Collectors.toMap(JobApplicationUserJobProjection::getJobId, Function.identity()));
@@ -63,6 +63,22 @@ public class JobService {
             jobResponseDTO.setUserId(job.getUser().getId());
             jobResponseDTO.setName(job.getUser().getName());
             jobResponseDTO.setApplied(jobApplications.containsKey(job.getId()));
+            return jobResponseDTO;
+        }).collect(Collectors.toList());
+        return response;
+    }
+
+    public List<JobResultDTO> findAllByUser(String username) {
+        User user = userService.getUserByEmail(username);
+        List<JobProjection> jobs = jobRepository.findAllByUser(user,
+                PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
+        List<JobResultDTO> response = jobs.stream().map(job -> {
+            JobResultDTO jobResponseDTO = new JobResultDTO();
+            jobResponseDTO.setId(job.getId());
+            jobResponseDTO.setTitle(job.getTitle());
+            jobResponseDTO.setDescription(job.getDescription());
+            jobResponseDTO.setUserId(job.getUser().getId());
+            jobResponseDTO.setName(job.getUser().getName());
             return jobResponseDTO;
         }).collect(Collectors.toList());
         return response;

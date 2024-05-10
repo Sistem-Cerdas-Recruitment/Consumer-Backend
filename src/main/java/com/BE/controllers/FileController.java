@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,6 +68,18 @@ public class FileController {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CurriculumVitae cv = curriculumVitaeService.save(file, username);
         FileResponseDTO body = FileResponseDTO.builder()
+                .id(cv.getId())
+                .fileName(cv.getOriginalFileName())
+                .uploadDate(cv.getCreatedAt())
+                .build();
+        return ResponseEntity.ok(body);
+    }
+
+    @PatchMapping("/cv/default")
+    public ResponseEntity<Object> setDefaultCV(@RequestBody UUID id) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurriculumVitae cv = curriculumVitaeService.setDefault(id, username);
+        FileResponseDTO body =  FileResponseDTO.builder()
                 .id(cv.getId())
                 .fileName(cv.getOriginalFileName())
                 .uploadDate(cv.getCreatedAt())

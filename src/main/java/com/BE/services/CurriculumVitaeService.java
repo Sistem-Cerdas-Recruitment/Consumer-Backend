@@ -88,4 +88,24 @@ public class CurriculumVitaeService {
         return curriculumVitaeRepository.save(cv);
     }
 
+    public CurriculumVitae setDefault(UUID cvId, String username) {
+        User user = userService.getUserByEmail(username);
+        List<CurriculumVitae> cvs = curriculumVitaeRepository.findAllByUser(user,
+                PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "isDefault", "createdAt")));
+        CurriculumVitae curriculumVitae = null;
+
+        for (CurriculumVitae cv : cvs) {
+            if(cv.getId().equals(cvId)) {
+                cv.setDefault(true);
+                curriculumVitae = cv;
+            } else {
+                cv.setDefault(false);
+            }
+        }
+
+        curriculumVitaeRepository.saveAll(cvs);
+
+        return curriculumVitae;
+    }
+
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.BE.dto.job.JobApplicationDTO;
 import com.BE.dto.job.JobApplicationRequestDTO;
 import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
@@ -46,6 +47,17 @@ public class JobController {
         return ResponseEntity.ok(body);
     }
 
+    @GetMapping("/posted")
+    @RolesAllowed("RECRUITER")
+    public ResponseEntity<?> getPostedJobs() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<JobResultDTO> jobs = jobService.findAllByUser(username);
+        Map<String, Object> body = new HashMap<>();
+        body.put("data", jobs);
+
+        return ResponseEntity.ok(body);
+    }
+
     @GetMapping("/all/{page}/{size}")
     public String getAllJobs(@PathVariable int page, @PathVariable int size) {
         return "All jobs";
@@ -64,14 +76,15 @@ public class JobController {
 
     @GetMapping("{jobId}/application/{applicationId}")
     public ResponseEntity<?> getApplication(@PathVariable UUID jobId, @PathVariable UUID applicationId) {
-        // TODO: Implement this
+        // TODO: Check
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        JobApplicationDTO jobApplication;
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RECRUITER"))) {
-            
+            jobApplication = jobService.getRecruiterJobApplication(applicationId, username);
         } else{
-
-
+            jobApplication = jobService.getCandidateJobApplication(applicationId, username);
         }
-        return null;
+        return ResponseEntity.ok(jobApplication);
     }
 
     @PostMapping("/post")

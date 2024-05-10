@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 
 import com.BE.constants.JobStatus;
 import com.BE.entities.Job;
+import com.BE.entities.User;
 import com.BE.repositories.projections.JobProjection;
 
 public interface JobRepository extends JpaRepository<Job, UUID> {
@@ -17,6 +18,8 @@ public interface JobRepository extends JpaRepository<Job, UUID> {
     public @NonNull Page<Job> findAll(@NonNull Pageable pageable);
 
     public List<JobProjection> findAllByStatus(JobStatus status, Pageable pageable);
+
+    public List<JobProjection> findAllByUser(User user, Pageable pageable);
 
     public @NonNull Page<Job> findAllByTitleContaining(String title, Pageable pageable);
 }
