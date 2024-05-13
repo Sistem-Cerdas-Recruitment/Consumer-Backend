@@ -42,7 +42,6 @@ public class JobController {
         List<JobResultDTO> jobs = jobService.findAllOpenJobs(username);
         Map<String, Object> body = new HashMap<>();
         body.put("data", jobs);
-        // body.put("userid", jobs.get(0).getUser().getId());
 
         return ResponseEntity.ok(body);
     }
@@ -63,9 +62,15 @@ public class JobController {
         return "All jobs";
     }
 
-    @GetMapping("{jobId}/application")
+    @GetMapping("/{jobId}")
+    public ResponseEntity<?> getJob(@PathVariable UUID jobId) {
+        JobResultDTO job = jobService.findJob(jobId);
+        return ResponseEntity.ok(job);
+    }
+
+    @GetMapping("{jobId}/applications")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<?> getApplication(@PathVariable UUID jobId) {
+    public ResponseEntity<?> getJobApplications(@PathVariable UUID jobId) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobApplicationResultDTO> jobApplications = jobService.findApplications(jobId, username);
         Map<String, Object> body = new HashMap<>();
@@ -74,8 +79,8 @@ public class JobController {
         return ResponseEntity.ok(body);
     }
 
-    @GetMapping("{jobId}/application/{applicationId}")
-    public ResponseEntity<?> getApplication(@PathVariable UUID jobId, @PathVariable UUID applicationId) {
+    @GetMapping("/application/{applicationId}")
+    public ResponseEntity<?> getApplication(@PathVariable UUID applicationId) {
         // TODO: Check
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobApplicationDTO jobApplication;

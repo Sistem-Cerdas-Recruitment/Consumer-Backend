@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.BE.constants.JobApplicationStatus;
@@ -46,6 +47,17 @@ public class JobService {
 
     public Job find(UUID id) {
         return jobRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Job not found"));
+    }
+
+    public JobResultDTO findJob(UUID id) {
+        Job job = jobRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Job not found"));
+        JobResultDTO jobResponseDTO = new JobResultDTO();
+        jobResponseDTO.setId(job.getId());
+        jobResponseDTO.setTitle(job.getTitle());
+        jobResponseDTO.setDescription(job.getDescription());
+        jobResponseDTO.setUserId(job.getUser().getId());
+        jobResponseDTO.setName(job.getUser().getName());
+        return jobResponseDTO;
     }
 
     public List<JobResultDTO> findAllOpenJobs(String username) {
@@ -103,8 +115,19 @@ public class JobService {
                     }).collect(Collectors.toList());
             return jobApplications;
         } else {
-            throw new IllegalArgumentException("You are not authorized to access this resource");
+            throw new AccessDeniedException("You are not authorized to access this resource");
         }
+    }
+
+    public Job createJob(String title, String description, String username) {
+        User user = userService.getUserByEmail(username);
+        Job job = Job.builder()
+                .title(title)
+                .description(description)
+                .user(user)
+                .status(JobStatus.OPEN)
+                .build();
+        return jobRepository.save(job);
     }
 
     public List<JobApplicationResultDTO> findApplications(String username) {
@@ -125,20 +148,13 @@ public class JobService {
         return jobApplications;
     }
 
-    public Job createJob(String title, String description, String username) {
-        User user = userService.getUserByEmail(username);
-        Job job = Job.builder()
-                .title(title)
-                .description(description)
-                .user(user)
-                .status(JobStatus.OPEN)
-                .build();
-        return jobRepository.save(job);
+    public JobApplication getJobApplication(UUID applicationId) {
+        return jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
     }
 
     public JobApplicationDTO getCandidateJobApplication(UUID applicationId, String username) {
-        JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+        JobApplication jobApplication = getJobApplication(applicationId);
         JobApplicationDTO jobApplicationDTO = JobApplicationDTO.builder()
                 .id(jobApplication.getId())
                 .status(jobApplication.getStatus())
@@ -154,13 +170,12 @@ public class JobService {
         if (jobApplication.getUser().getEmail().equals(username)) {
             return jobApplicationDTO;
         } else {
-            throw new IllegalArgumentException("You are not authorized to access this resource");
+            throw new AccessDeniedException("You are not authorized to access this resource");
         }
     }
 
     public JobApplicationDTO getRecruiterJobApplication(UUID applicationId, String username) {
-        JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+        JobApplication jobApplication = getJobApplication(applicationId);
 
         JobApplicationDTO jobApplicationDTO = JobApplicationDTO.builder()
                 .id(jobApplication.getId())
@@ -178,7 +193,7 @@ public class JobService {
         if (jobApplication.getJob().getUser().getEmail().equals(username)) {
             return jobApplicationDTO;
         } else {
-            throw new IllegalArgumentException("You are not authorized to access this resource");
+            throw new AccessDeniedException("You are not authorized to access this resource");
         }
     }
 
@@ -207,8 +222,7 @@ public class JobService {
 
     public JobApplication updateJobApplication(UUID applicationId, JobApplicationStatus status,
             List<EvaluationDTO> evaluations) {
-        JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new NoSuchElementException("Job application not found"));
+        JobApplication jobApplication = getJobApplication(applicationId);
         if (evaluations.size() != jobApplication.getInterviewChatLogs().size()) {
             throw new IllegalArgumentException("Invalid number of evaluations");
         }
@@ -221,6 +235,10 @@ public class JobService {
             interviewChatLogs.get(i).setSecondaryModelPrediction(evaluations.get(i).getSecondaryModelPrediction());
             interviewChatLogs.get(i).setMainModelProbability(evaluations.get(i).getMainModelProbability());
         }
+        return jobApplicationRepository.save(jobApplication);
+    }
+
+    public JobApplication save(JobApplication jobApplication) {
         return jobApplicationRepository.save(jobApplication);
     }
 }
