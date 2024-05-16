@@ -13,7 +13,7 @@ import com.BE.dto.auth.AuthResponseDTO;
 import com.BE.dto.auth.RegisterRequestDTO;
 import com.BE.entities.User;
 import com.BE.security.JwtService;
-import com.BE.services.UserService;
+import com.BE.services.user.UserService;
 
 @Service
 public class AuthService {

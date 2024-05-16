@@ -25,7 +25,7 @@ import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
-import com.BE.services.JobService;
+import com.BE.services.job.JobService;
 
 import jakarta.annotation.security.RolesAllowed;
 

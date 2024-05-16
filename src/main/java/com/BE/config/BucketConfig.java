@@ -1,5 +1,6 @@
 package com.BE.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,8 +13,11 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @Configuration
 public class BucketConfig {
     
-    private final String awsAccessKey = "AKIAQ3EGRLH2KNN4WR4Y";
-    private final String awsSecretKey = "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";
+    @Value("${aws.access-key}")
+    private String awsAccessKey;
+
+    @Value("${aws.secret-key}")
+    private String awsSecretKey;
 
     @Bean
     public S3Presigner s3Presigner() {

@@ -1,4 +1,4 @@
-package com.BE.services;
+package com.BE.services.user;
 
 import java.util.NoSuchElementException;
 

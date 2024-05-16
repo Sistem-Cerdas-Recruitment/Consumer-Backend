@@ -4,9 +4,11 @@ import java.util.UUID;
 
 import com.BE.constants.JobApplicationStatus;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class JobApplicationResultDTO {
     private UUID id;
     private JobApplicationStatus status;

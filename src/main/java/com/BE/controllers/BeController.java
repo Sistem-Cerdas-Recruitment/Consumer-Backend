@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.entities.User;
-import com.BE.services.AntiCheatService;
-import com.BE.services.UserService;
+import com.BE.services.antiCheat.AntiCheatService;
 import com.BE.services.kafka.KafkaProducer;
 import com.BE.services.kafka.KafkaTopicManager;
 import com.BE.services.storage.BucketService;
+import com.BE.services.user.UserService;
 
 import jakarta.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping("/api")
+@RolesAllowed("ADMIN")
 public class BeController {
 
     @Autowired

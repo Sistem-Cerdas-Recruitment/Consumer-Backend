@@ -1,4 +1,4 @@
-package com.BE.services;
+package com.BE.services.job;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,8 @@ import com.BE.entities.User;
 import com.BE.repositories.JobApplicationRepository;
 import com.BE.repositories.JobRepository;
 import com.BE.repositories.projections.JobApplicationProjection.JobApplicationUserJobProjection;
+import com.BE.services.CurriculumVitaeService;
+import com.BE.services.user.UserService;
 import com.BE.repositories.projections.JobProjection;
 
 @Service
@@ -51,12 +53,13 @@ public class JobService {
 
     public JobResultDTO findJob(UUID id) {
         Job job = jobRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Job not found"));
-        JobResultDTO jobResponseDTO = new JobResultDTO();
-        jobResponseDTO.setId(job.getId());
-        jobResponseDTO.setTitle(job.getTitle());
-        jobResponseDTO.setDescription(job.getDescription());
-        jobResponseDTO.setUserId(job.getUser().getId());
-        jobResponseDTO.setName(job.getUser().getName());
+        JobResultDTO jobResponseDTO = JobResultDTO.builder()
+                .id(job.getId())
+                .title(job.getTitle())
+                .description(job.getDescription())
+                .userId(job.getUser().getId())
+                .name(job.getUser().getName())
+                .build();
         return jobResponseDTO;
     }
 
@@ -68,13 +71,14 @@ public class JobService {
                 .stream()
                 .collect(Collectors.toMap(JobApplicationUserJobProjection::getJobId, Function.identity()));
         List<JobResultDTO> response = jobs.stream().map(job -> {
-            JobResultDTO jobResponseDTO = new JobResultDTO();
-            jobResponseDTO.setId(job.getId());
-            jobResponseDTO.setTitle(job.getTitle());
-            jobResponseDTO.setDescription(job.getDescription());
-            jobResponseDTO.setUserId(job.getUser().getId());
-            jobResponseDTO.setName(job.getUser().getName());
-            jobResponseDTO.setApplied(jobApplications.containsKey(job.getId()));
+            JobResultDTO jobResponseDTO = JobResultDTO.builder()
+                    .id(job.getId())
+                    .title(job.getTitle())
+                    .description(job.getDescription())
+                    .userId(job.getUser().getId())
+                    .name(job.getUser().getName())
+                    .applied(jobApplications.containsKey(job.getId()))
+                    .build();
             return jobResponseDTO;
         }).collect(Collectors.toList());
         return response;
@@ -85,12 +89,13 @@ public class JobService {
         List<JobProjection> jobs = jobRepository.findAllByUser(user,
                 PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
         List<JobResultDTO> response = jobs.stream().map(job -> {
-            JobResultDTO jobResponseDTO = new JobResultDTO();
-            jobResponseDTO.setId(job.getId());
-            jobResponseDTO.setTitle(job.getTitle());
-            jobResponseDTO.setDescription(job.getDescription());
-            jobResponseDTO.setUserId(job.getUser().getId());
-            jobResponseDTO.setName(job.getUser().getName());
+            JobResultDTO jobResponseDTO = JobResultDTO.builder()
+                    .id(job.getId())
+                    .title(job.getTitle())
+                    .description(job.getDescription())
+                    .userId(job.getUser().getId())
+                    .name(job.getUser().getName())
+                    .build();
             return jobResponseDTO;
         }).collect(Collectors.toList());
         return response;
@@ -102,15 +107,16 @@ public class JobService {
         if (job.getUser().getId().equals(user.getId())) {
             List<JobApplicationResultDTO> jobApplications = jobApplicationRepository.findByJob(job).stream()
                     .map(jobApplication -> {
-                        JobApplicationResultDTO jobApplicationResultDTO = new JobApplicationResultDTO();
-                        jobApplicationResultDTO.setId(jobApplication.getId());
-                        jobApplicationResultDTO.setJobId(jobApplication.getJobId());
-                        jobApplicationResultDTO.setJobTitle(jobApplication.getJob().getTitle());
-                        jobApplicationResultDTO.setRecruiterId(jobApplication.getJob().getUser().getId());
-                        jobApplicationResultDTO.setRecruiterName(jobApplication.getJob().getUser().getName());
-                        jobApplicationResultDTO.setStatus(jobApplication.getStatus());
-                        jobApplicationResultDTO.setUserId(jobApplication.getUser().getId());
-                        jobApplicationResultDTO.setUserName(jobApplication.getUser().getName());
+                        JobApplicationResultDTO jobApplicationResultDTO = JobApplicationResultDTO.builder()
+                                .id(jobApplication.getId())
+                                .jobId(jobApplication.getJobId())
+                                .jobTitle(jobApplication.getJob().getTitle())
+                                .recruiterId(jobApplication.getJob().getUser().getId())
+                                .recruiterName(jobApplication.getJob().getUser().getName())
+                                .status(jobApplication.getStatus())
+                                .userId(jobApplication.getUser().getId())
+                                .userName(jobApplication.getUser().getName())
+                                .build();
                         return jobApplicationResultDTO;
                     }).collect(Collectors.toList());
             return jobApplications;
@@ -134,15 +140,16 @@ public class JobService {
         User user = userService.getUserByEmail(username);
         List<JobApplicationResultDTO> jobApplications = jobApplicationRepository.findAllByUser(user).stream()
                 .map(jobApplication -> {
-                    JobApplicationResultDTO jobApplicationResultDTO = new JobApplicationResultDTO();
-                    jobApplicationResultDTO.setId(jobApplication.getId());
-                    jobApplicationResultDTO.setJobId(jobApplication.getJobId());
-                    jobApplicationResultDTO.setJobTitle(jobApplication.getJob().getTitle());
-                    jobApplicationResultDTO.setRecruiterId(jobApplication.getJob().getUser().getId());
-                    jobApplicationResultDTO.setRecruiterName(jobApplication.getJob().getUser().getName());
-                    jobApplicationResultDTO.setStatus(jobApplication.getStatus());
-                    jobApplicationResultDTO.setUserId(jobApplication.getUser().getId());
-                    jobApplicationResultDTO.setUserName(jobApplication.getUser().getName());
+                    JobApplicationResultDTO jobApplicationResultDTO = JobApplicationResultDTO.builder()
+                            .id(jobApplication.getId())
+                            .jobId(jobApplication.getJobId())
+                            .jobTitle(jobApplication.getJob().getTitle())
+                            .recruiterId(jobApplication.getJob().getUser().getId())
+                            .recruiterName(jobApplication.getJob().getUser().getName())
+                            .status(jobApplication.getStatus())
+                            .userId(jobApplication.getUser().getId())
+                            .userName(jobApplication.getUser().getName())
+                            .build();
                     return jobApplicationResultDTO;
                 }).collect(Collectors.toList());
         return jobApplications;

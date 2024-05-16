@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.dto.antiCheat.AntiCheatEvaluationDTO;
 import com.BE.dto.antiCheat.AntiCheatResultDTO;
-import com.BE.services.AntiCheatService;
+import com.BE.services.antiCheat.AntiCheatService;
 
 @RestController
 @RequestMapping("/api/anti-cheat")

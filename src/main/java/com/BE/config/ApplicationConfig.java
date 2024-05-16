@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.BE.services.UserService;
+import com.BE.services.user.UserService;
 
 @Configuration
 public class ApplicationConfig {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.dto.InterviewDTO;
-import com.BE.services.InterviewService;
+import com.BE.services.job.InterviewService;
 
 @RestController
 @RequestMapping("/api/interview")

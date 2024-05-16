@@ -15,6 +15,7 @@ import com.BE.entities.CurriculumVitae;
 import com.BE.entities.User;
 import com.BE.repositories.CurriculumVitaeRepository;
 import com.BE.services.storage.BucketService;
+import com.BE.services.user.UserService;
 
 @Service
 public class CurriculumVitaeService {
