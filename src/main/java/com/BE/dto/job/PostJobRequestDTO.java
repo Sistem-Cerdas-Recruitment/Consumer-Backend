@@ -12,7 +12,7 @@ public class PostJobRequestDTO {
     @NotBlank(message = "Description is required")
     private String description;
     @NotBlank(message = "Priority roles are required")
-    private List<String> priorityRoles;
+    private List<String> priorityMajors;
     @NotBlank(message = "Skills are required")
     private List<String> skills;
 }

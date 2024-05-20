@@ -18,7 +18,7 @@ public class JobResultDTO {
     private UUID id;
     private String title;
     private String description;
-    private List<String> priorityRoles;
+    private List<String> priorityMajors;
     private List<String> skills;
     private JobStatus status;
     private UUID userId;

@@ -3,6 +3,7 @@ package com.BE.entities;
 import java.util.List;
 
 import com.BE.constants.JobStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -18,12 +19,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Job extends BaseEntity{
+public class Job extends BaseEntity {
 
     private String title;
     private String description;
     private JobStatus status;
-    private List<String> priorityRoles;
+    @JsonProperty("priority_majors")
+    private List<String> priorityMajors;
     private List<String> skills;
 
     @ManyToOne

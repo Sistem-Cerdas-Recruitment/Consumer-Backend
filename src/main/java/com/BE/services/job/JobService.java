@@ -58,7 +58,7 @@ public class JobService {
                 .id(job.getId())
                 .title(job.getTitle())
                 .description(job.getDescription())
-                .priorityRoles(job.getPriorityRoles())
+                .priorityMajors(job.getPriorityMajors())
                 .skills(job.getSkills())
                 .userId(job.getUser().getId())
                 .name(job.getUser().getName())
@@ -128,13 +128,13 @@ public class JobService {
         }
     }
 
-    public PostJobResponseDTO createJob(String title, String description, List<String> priorityRoles,
+    public PostJobResponseDTO createJob(String title, String description, List<String> priorityMajors,
             List<String> skills, String username) {
         User user = userService.getUserByEmail(username);
         Job job = Job.builder()
                 .title(title)
                 .description(description)
-                .priorityRoles(priorityRoles)
+                .priorityMajors(priorityMajors)
                 .skills(skills)
                 .user(user)
                 .status(JobStatus.OPEN)
@@ -144,7 +144,7 @@ public class JobService {
                 .id(job.getId())
                 .title(job.getTitle())
                 .description(job.getDescription())
-                .priorityRoles(job.getPriorityRoles())
+                .priorityMajors(job.getPriorityMajors())
                 .skills(job.getSkills())
                 .userId(job.getUser().getId())
                 .name(job.getUser().getName())

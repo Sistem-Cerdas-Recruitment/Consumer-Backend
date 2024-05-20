@@ -1,14 +1,20 @@
 package com.BE.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.BE.entities.CurriculumVitae;
@@ -16,9 +22,19 @@ import com.BE.entities.User;
 import com.BE.repositories.CurriculumVitaeRepository;
 import com.BE.services.storage.BucketService;
 import com.BE.services.user.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class CurriculumVitaeService {
+
+    @Value("${service.x-api-key}")
+    private String xApiKey;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @Autowired
     UserService userService;
@@ -107,6 +123,22 @@ public class CurriculumVitaeService {
         curriculumVitaeRepository.saveAll(cvs);
 
         return curriculumVitae;
+    }
+
+    public ResponseEntity<Object> extract(UUID id){
+        CurriculumVitae cv = curriculumVitaeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("CV not found"));
+        String cvUrl = bucketService.createPresignedGetUrl(cv.getFileName());
+        Map<String, String> body = Map.of("link", cvUrl);
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, getHeaders());
+        ResponseEntity<Object> response = restTemplate.postForEntity("https://lm-as-service.vercel.app/cv", entity, Object.class);
+        return response;
+    }
+
+    private HttpHeaders getHeaders(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-api-key", xApiKey);
+        return headers;
     }
 
 }

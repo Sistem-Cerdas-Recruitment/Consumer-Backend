@@ -111,4 +111,9 @@ public class FileController {
         headers.setContentType(MediaType.APPLICATION_PDF);
         return ResponseEntity.ok().headers(headers).body(content);
     }
+
+    @PostMapping("/cv/extract")
+    public ResponseEntity<Object> extractCV(@RequestBody Map<String, UUID> request) {
+        return curriculumVitaeService.extract(request.get("id"));
+    }
 }
