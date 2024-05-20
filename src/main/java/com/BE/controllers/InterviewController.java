@@ -22,7 +22,7 @@ public class InterviewController {
     private InterviewService interviewService;
     
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getInterview(@PathVariable UUID id) {
+    public ResponseEntity<InterviewDTO> getInterview(@PathVariable UUID id) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         InterviewDTO interview = interviewService.getInterview(id, username);
         return ResponseEntity.ok(interview);

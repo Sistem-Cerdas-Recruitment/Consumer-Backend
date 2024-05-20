@@ -1,7 +1,5 @@
 package com.BE.dto.job;
 
-import com.BE.entities.Job;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,5 +7,5 @@ import lombok.Data;
 @Builder
 public class PostJobResponseDTO {
     private String message;
-    private Job job;
+    private JobResultDTO job;
 }

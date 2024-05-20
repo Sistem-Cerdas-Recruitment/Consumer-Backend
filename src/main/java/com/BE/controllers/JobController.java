@@ -23,8 +23,6 @@ import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
-import com.BE.entities.Job;
-import com.BE.entities.JobApplication;
 import com.BE.services.job.JobService;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -37,10 +35,10 @@ public class JobController {
     public JobService jobService;
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllJobs() {
+    public ResponseEntity<Map<String, List<JobResultDTO>>> getAllJobs() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobResultDTO> jobs = jobService.findAllOpenJobs(username);
-        Map<String, Object> body = new HashMap<>();
+        Map<String, List<JobResultDTO>> body = new HashMap<>();
         body.put("data", jobs);
 
         return ResponseEntity.ok(body);
@@ -48,10 +46,10 @@ public class JobController {
 
     @GetMapping("/posted")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<?> getPostedJobs() {
+    public ResponseEntity<Map<String, List<JobResultDTO>>> getPostedJobs() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobResultDTO> jobs = jobService.findAllByUser(username);
-        Map<String, Object> body = new HashMap<>();
+        Map<String, List<JobResultDTO>> body = new HashMap<>();
         body.put("data", jobs);
 
         return ResponseEntity.ok(body);
@@ -63,30 +61,31 @@ public class JobController {
     }
 
     @GetMapping("/{jobId}")
-    public ResponseEntity<?> getJob(@PathVariable UUID jobId) {
+    public ResponseEntity<JobResultDTO> getJob(@PathVariable UUID jobId) {
         JobResultDTO job = jobService.findJob(jobId);
         return ResponseEntity.ok(job);
     }
 
     @GetMapping("{jobId}/applications")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<?> getJobApplications(@PathVariable UUID jobId) {
+    public ResponseEntity<Map<String, List<JobApplicationResultDTO>>> getJobApplications(@PathVariable UUID jobId) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobApplicationResultDTO> jobApplications = jobService.findApplications(jobId, username);
-        Map<String, Object> body = new HashMap<>();
+        Map<String, List<JobApplicationResultDTO>> body = new HashMap<>();
         body.put("data", jobApplications);
 
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/application/{applicationId}")
-    public ResponseEntity<?> getApplication(@PathVariable UUID applicationId) {
+    public ResponseEntity<JobApplicationDTO> getApplication(@PathVariable UUID applicationId) {
         // TODO: Check
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobApplicationDTO jobApplication;
-        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RECRUITER"))) {
+        if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .contains(new SimpleGrantedAuthority("ROLE_RECRUITER"))) {
             jobApplication = jobService.getRecruiterJobApplication(applicationId, username);
-        } else{
+        } else {
             jobApplication = jobService.getCandidateJobApplication(applicationId, username);
         }
         return ResponseEntity.ok(jobApplication);
@@ -94,22 +93,19 @@ public class JobController {
 
     @PostMapping("/post")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<?> postJob(@RequestBody @Validated PostJobRequestDTO postJobRequestDTO) {
+    public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody @Validated PostJobRequestDTO postJobRequestDTO) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Job job = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(), username);
-        PostJobResponseDTO body = PostJobResponseDTO.builder()
-                .message("Job posted successfully")
-                .job(job)
-                .build();
+        PostJobResponseDTO body = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(),
+                postJobRequestDTO.getPriorityRoles(), postJobRequestDTO.getSkills(), username);
         return ResponseEntity.ok().body(body);
     }
 
     @PostMapping("/apply")
     @RolesAllowed("CANDIDATE")
-    public ResponseEntity<?> applyForJob(@RequestBody JobApplicationRequestDTO body) {
+    public ResponseEntity<JobApplicationDTO> applyForJob(@RequestBody JobApplicationRequestDTO body) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        JobApplication jobApplication =  jobService.apply(body.getJobId(), body.getCvId(), username);
-        return ResponseEntity.ok().body(jobApplication);
+        JobApplicationDTO jobApplicationDto = jobService.apply(body.getJobId(), body.getCvId(), username);
+        return ResponseEntity.ok().body(jobApplicationDto);
     }
 
 }

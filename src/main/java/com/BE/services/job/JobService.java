@@ -21,6 +21,7 @@ import com.BE.dto.antiCheat.EvaluationDTO;
 import com.BE.dto.job.JobApplicationDTO;
 import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
+import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
@@ -57,6 +58,8 @@ public class JobService {
                 .id(job.getId())
                 .title(job.getTitle())
                 .description(job.getDescription())
+                .priorityRoles(job.getPriorityRoles())
+                .skills(job.getSkills())
                 .userId(job.getUser().getId())
                 .name(job.getUser().getName())
                 .build();
@@ -125,15 +128,31 @@ public class JobService {
         }
     }
 
-    public Job createJob(String title, String description, String username) {
+    public PostJobResponseDTO createJob(String title, String description, List<String> priorityRoles,
+            List<String> skills, String username) {
         User user = userService.getUserByEmail(username);
         Job job = Job.builder()
                 .title(title)
                 .description(description)
+                .priorityRoles(priorityRoles)
+                .skills(skills)
                 .user(user)
                 .status(JobStatus.OPEN)
                 .build();
-        return jobRepository.save(job);
+        jobRepository.save(job);
+        JobResultDTO jobResultDTO = JobResultDTO.builder()
+                .id(job.getId())
+                .title(job.getTitle())
+                .description(job.getDescription())
+                .priorityRoles(job.getPriorityRoles())
+                .skills(job.getSkills())
+                .userId(job.getUser().getId())
+                .name(job.getUser().getName())
+                .build();
+        return PostJobResponseDTO.builder()
+                .message("Job posted successfully")
+                .job(jobResultDTO)
+                .build();
     }
 
     public List<JobApplicationResultDTO> findApplications(String username) {
@@ -204,7 +223,7 @@ public class JobService {
         }
     }
 
-    public JobApplication apply(UUID jobId, UUID cvId, String username) {
+    public JobApplicationDTO apply(UUID jobId, UUID cvId, String username) {
         User user = userService.getUserByEmail(username);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
         Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
@@ -218,12 +237,23 @@ public class JobService {
                     .user(user)
                     .cv(cv)
                     .build();
-            return jobApplicationRepository.save(jobApplication);
+            jobApplicationRepository.save(jobApplication);
+            return JobApplicationDTO.builder()
+                    .id(jobApplication.getId())
+                    .status(jobApplication.getStatus())
+                    .jobId(jobApplication.getJob().getId())
+                    .jobTitle(jobApplication.getJob().getTitle())
+                    .recruiterId(jobApplication.getJob().getUser().getId())
+                    .recruiterName(jobApplication.getJob().getUser().getName())
+                    .userId(jobApplication.getUser().getId())
+                    .userName(jobApplication.getUser().getName())
+                    .fileName(jobApplication.getCv().getFileName())
+                    .cvUrl(curriculumVitaeService.get(jobApplication.getId(), username))
+                    .build();
         } else if (existingJobApplication.isPresent()) {
             throw new IllegalArgumentException("You have already applied for this job");
         } else {
             throw new NoSuchElementException("Job not found");
-
         }
     }
 

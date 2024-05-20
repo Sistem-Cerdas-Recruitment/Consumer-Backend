@@ -1,5 +1,7 @@
 package com.BE.entities;
 
+import java.util.List;
+
 import com.BE.constants.JobStatus;
 
 import jakarta.persistence.Entity;
@@ -21,6 +23,8 @@ public class Job extends BaseEntity{
     private String title;
     private String description;
     private JobStatus status;
+    private List<String> priorityRoles;
+    private List<String> skills;
 
     @ManyToOne
     private User user;

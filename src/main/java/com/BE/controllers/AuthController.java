@@ -72,7 +72,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
+    public ResponseEntity<Object> logout() {
         ResponseCookie cookie = ResponseCookie.from("biskuat", "")
                 .httpOnly(true)
                 .path("/")

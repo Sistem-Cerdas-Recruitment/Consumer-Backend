@@ -32,7 +32,7 @@ public class AntiCheatController {
     }
 
     @PatchMapping("/result")
-    public ResponseEntity<?> updateResult(@RequestBody @Validated AntiCheatResultDTO body) {
+    public ResponseEntity<String> updateResult(@RequestBody @Validated AntiCheatResultDTO body) {
 
         antiCheatService.updateResult(body);
         return ResponseEntity.ok("success");

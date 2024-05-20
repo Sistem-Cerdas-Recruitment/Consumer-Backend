@@ -1,5 +1,7 @@
 package com.BE.dto.job;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -9,5 +11,8 @@ public class PostJobRequestDTO {
     private String title;
     @NotBlank(message = "Description is required")
     private String description;
-
+    @NotBlank(message = "Priority roles are required")
+    private List<String> priorityRoles;
+    @NotBlank(message = "Skills are required")
+    private List<String> skills;
 }
