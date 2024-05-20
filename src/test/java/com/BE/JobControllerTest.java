@@ -47,8 +47,8 @@ class JobControllerTest {
     void testGetAllJobs() {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", null, UUID.randomUUID(), "User 1", false));
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", null, UUID.randomUUID(), "User 2", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null, UUID.randomUUID(), "User 1", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null, UUID.randomUUID(), "User 2", false));
         when(jobService.findAllOpenJobs("username")).thenReturn(jobs);
 
         // Act
