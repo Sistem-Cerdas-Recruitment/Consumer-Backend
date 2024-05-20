@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
-import com.BE.dto.InterviewChatLogDTO;
+import com.BE.dto.InterviewChatDTO;
 import com.BE.dto.antiCheat.EvaluationDTO;
 import com.BE.dto.job.JobApplicationDTO;
 import com.BE.dto.job.JobApplicationResultDTO;
@@ -234,7 +234,7 @@ public class JobService {
             throw new IllegalArgumentException("Invalid number of evaluations");
         }
         jobApplication.setStatus(status);
-        List<InterviewChatLogDTO> interviewChatLogs = jobApplication.getInterviewChatLogs();
+        List<InterviewChatDTO> interviewChatLogs = jobApplication.getInterviewChatLogs();
 
         for (int i = 0; i < evaluations.size(); i++) {
             interviewChatLogs.get(i).setPredictedClass(evaluations.get(i).getPredictedClass());

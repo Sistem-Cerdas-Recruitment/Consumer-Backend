@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.BE.constants.InterviewStatus;
 import com.BE.constants.JobApplicationStatus;
-import com.BE.dto.InterviewChatLogDTO;
+import com.BE.dto.InterviewChatDTO;
 import com.BE.dto.InterviewDTO;
 import com.BE.entities.JobApplication;
 
@@ -28,16 +28,15 @@ public class InterviewService {
         }
     }
 
-    public InterviewChatLogDTO answer(UUID jobApplicationId, String username, InterviewChatLogDTO chatLog) {
+    public InterviewChatDTO answer(UUID jobApplicationId, String username, InterviewChatDTO chatLog) {
         JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
         if (jobApplication.getUser().getUsername().equals(username)
                 && jobApplication.getStatus().equals(JobApplicationStatus.INTERVIEW)) {
-            InterviewChatLogDTO interviewChatLogDTO = jobApplication.getInterviewChatLogs()
+            InterviewChatDTO interviewChatLogDTO = jobApplication.getInterviewChatLogs()
                     .get(jobApplication.getInterviewChatLogs().size() - 1);
             interviewChatLogDTO.setAnswer(chatLog.getAnswer());
             interviewChatLogDTO.setBackspaceCount(chatLog.getBackspaceCount());
             interviewChatLogDTO.setLetterClickCounts(chatLog.getLetterClickCounts());
-            interviewChatLogDTO.setTypingDuration(chatLog.getTypingDuration());
 
             jobService.save(jobApplication);
             return chatLog;

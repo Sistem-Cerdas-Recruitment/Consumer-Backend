@@ -5,7 +5,7 @@ import java.util.List;
 import org.hibernate.annotations.Type;
 
 import com.BE.constants.JobApplicationStatus;
-import com.BE.dto.InterviewChatLogDTO;
+import com.BE.dto.InterviewChatDTO;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
@@ -29,7 +29,7 @@ public class JobApplication extends BaseEntity{
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private List<InterviewChatLogDTO> interviewChatLogs;
+    private List<InterviewChatDTO> interviewChatLogs;
     
     @ManyToOne
     private User user;

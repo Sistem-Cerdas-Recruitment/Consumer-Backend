@@ -13,5 +13,5 @@ import lombok.Data;
 public class InterviewDTO {
     private InterviewStatus status;
     @JsonProperty("chat_logs")
-    private List<InterviewChatLogDTO> chatLogs;
+    private List<InterviewChatDTO> chatLogs;
 }

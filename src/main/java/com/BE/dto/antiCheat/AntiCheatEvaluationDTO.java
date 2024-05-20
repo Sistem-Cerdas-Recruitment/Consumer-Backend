@@ -3,7 +3,7 @@ package com.BE.dto.antiCheat;
 import java.util.List;
 import java.util.UUID;
 
-import com.BE.dto.InterviewChatLogDTO;
+import com.BE.dto.InterviewChatDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
@@ -19,5 +19,5 @@ public class AntiCheatEvaluationDTO {
 
     @NotBlank(message = "Evaluation is required")
     @JsonProperty("data")
-    private List<InterviewChatLogDTO> data;
+    private List<InterviewChatDTO> data;
 }
