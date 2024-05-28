@@ -45,7 +45,6 @@ public class CurriculumVitaeService {
     public CurriculumVitae find(UUID id, User user) {
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
-
         if (cv.getUser().getId().equals(user.getId())) {
             return cv;
         } else {
@@ -95,7 +94,7 @@ public class CurriculumVitaeService {
                 .user(user)
                 .build();
 
-        if(cvs.isEmpty()) {
+        if (cvs.isEmpty()) {
             cv.setDefault(true);
         }
 
@@ -109,7 +108,7 @@ public class CurriculumVitaeService {
         CurriculumVitae curriculumVitae = null;
 
         for (CurriculumVitae cv : cvs) {
-            if(cv.getId().equals(cvId)) {
+            if (cv.getId().equals(cvId)) {
                 cv.setDefault(true);
                 curriculumVitae = cv;
             } else {
@@ -122,17 +121,18 @@ public class CurriculumVitaeService {
         return curriculumVitae;
     }
 
-    public ResponseEntity<Object> extract(UUID id){
+    public ResponseEntity<Object> extract(UUID id) {
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
         String cvUrl = bucketService.createPresignedGetUrl(cv.getFileName());
         Map<String, String> body = Map.of("link", cvUrl);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, getHeaders());
-        ResponseEntity<Object> response = restTemplate.postForEntity(EndpointConstants.MATCHING_SERVICE + "/cv", entity, Object.class);
+        ResponseEntity<Object> response = restTemplate.postForEntity(EndpointConstants.MATCHING_SERVICE + "/cv", entity,
+                Object.class);
         return response;
     }
 
-    private HttpHeaders getHeaders(){
+    private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", xApiKey);
         return headers;

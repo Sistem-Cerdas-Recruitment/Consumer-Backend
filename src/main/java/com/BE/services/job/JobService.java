@@ -201,7 +201,7 @@ public class JobService {
                 .userId(jobApplication.getUser().getId())
                 .userName(jobApplication.getUser().getName())
                 .fileName(jobApplication.getCv().getFileName())
-                .cvUrl(curriculumVitaeService.get(applicationId, username))
+                .cvUrl(curriculumVitaeService.get(jobApplication.getCv().getId(), username))
                 .build();
         if (jobApplication.getUser().getEmail().equals(username)) {
             return jobApplicationDTO;
@@ -212,24 +212,22 @@ public class JobService {
 
     public JobApplicationDTO getRecruiterJobApplication(UUID applicationId, String username) {
         JobApplication jobApplication = getJobApplication(applicationId);
-
-        JobApplicationDTO jobApplicationDTO = JobApplicationDTO.builder()
-                .id(jobApplication.getId())
-                .status(jobApplication.getStatus())
-                .relevanceScore(jobApplication.getRelevanceScore())
-                .isRelevant(jobApplication.getIsRelevant())
-                .jobId(jobApplication.getJob().getId())
-                .jobTitle(jobApplication.getJob().getTitle())
-                .recruiterId(jobApplication.getJob().getUser().getId())
-                .recruiterName(jobApplication.getJob().getUser().getName())
-                .userId(jobApplication.getUser().getId())
-                .userName(jobApplication.getUser().getName())
-                .fileName(jobApplication.getCv().getFileName())
-                .cvUrl(curriculumVitaeService.get(applicationId, username))
-                .build();
-
         if (jobApplication.getJob().getUser().getEmail().equals(username)) {
-            return jobApplicationDTO;
+            return JobApplicationDTO.builder()
+                    .id(jobApplication.getId())
+                    .status(jobApplication.getStatus())
+                    .relevanceScore(jobApplication.getRelevanceScore())
+                    .isRelevant(jobApplication.getIsRelevant())
+                    .experience(jobApplication.getExperience())
+                    .jobId(jobApplication.getJob().getId())
+                    .jobTitle(jobApplication.getJob().getTitle())
+                    .recruiterId(jobApplication.getJob().getUser().getId())
+                    .recruiterName(jobApplication.getJob().getUser().getName())
+                    .userId(jobApplication.getUser().getId())
+                    .userName(jobApplication.getUser().getName())
+                    .fileName(jobApplication.getCv().getFileName())
+                    .cvUrl(curriculumVitaeService.get(jobApplication.getCv().getId(), jobApplication.getUser().getEmail()))
+                    .build();
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
         }
@@ -246,6 +244,7 @@ public class JobService {
             JobApplication jobApplication = JobApplication.builder()
                     .status(JobApplicationStatus.PENDING)
                     .isRelevant(false)
+                    .experience(experience)
                     .job(job)
                     .user(user)
                     .cv(cv)

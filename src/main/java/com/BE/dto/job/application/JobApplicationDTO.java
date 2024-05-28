@@ -12,6 +12,7 @@ import lombok.Data;
 public class JobApplicationDTO {
     private UUID id;
     private JobApplicationStatus status;
+    private Object experience;
     private Double relevanceScore;
     private Boolean isRelevant;
     private UUID jobId;

@@ -82,6 +82,7 @@ public class JobController {
         // TODO: Check
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobApplicationDTO jobApplication;
+        
         if (SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .contains(new SimpleGrantedAuthority("ROLE_RECRUITER"))) {
             jobApplication = jobService.getRecruiterJobApplication(applicationId, username);
