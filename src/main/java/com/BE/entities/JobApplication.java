@@ -30,6 +30,10 @@ public class JobApplication extends BaseEntity{
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     private List<InterviewChatDTO> interviewChatLogs;
+
+    private Double relevanceScore;
+
+    private Boolean isRelevant;
     
     @ManyToOne
     private User user;

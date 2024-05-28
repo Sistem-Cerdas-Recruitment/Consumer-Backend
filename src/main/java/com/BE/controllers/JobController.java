@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.BE.dto.job.JobApplicationDTO;
-import com.BE.dto.job.JobApplicationRequestDTO;
-import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
+import com.BE.dto.job.application.JobApplicationDTO;
+import com.BE.dto.job.application.JobApplicationRequestDTO;
+import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.services.job.JobService;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -96,7 +96,7 @@ public class JobController {
     public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody @Validated PostJobRequestDTO postJobRequestDTO) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PostJobResponseDTO body = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(),
-                postJobRequestDTO.getPriorityMajors(), postJobRequestDTO.getSkills(), username);
+                postJobRequestDTO.getMajors(), postJobRequestDTO.getSkills(), username);
         return ResponseEntity.ok().body(body);
     }
 
@@ -104,7 +104,7 @@ public class JobController {
     @RolesAllowed("CANDIDATE")
     public ResponseEntity<JobApplicationDTO> applyForJob(@RequestBody JobApplicationRequestDTO body) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        JobApplicationDTO jobApplicationDto = jobService.apply(body.getJobId(), body.getCvId(), username);
+        JobApplicationDTO jobApplicationDto = jobService.apply(body.getJobId(), body.getCvId(), body.getExperience(), username);
         return ResponseEntity.ok().body(jobApplicationDto);
     }
 

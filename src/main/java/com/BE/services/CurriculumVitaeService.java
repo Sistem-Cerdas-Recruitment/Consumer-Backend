@@ -17,21 +17,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.BE.constants.EndpointConstants;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.User;
 import com.BE.repositories.CurriculumVitaeRepository;
 import com.BE.services.storage.BucketService;
 import com.BE.services.user.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class CurriculumVitaeService {
 
     @Value("${service.x-api-key}")
     private String xApiKey;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Autowired
     RestTemplate restTemplate;
@@ -131,7 +128,7 @@ public class CurriculumVitaeService {
         String cvUrl = bucketService.createPresignedGetUrl(cv.getFileName());
         Map<String, String> body = Map.of("link", cvUrl);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, getHeaders());
-        ResponseEntity<Object> response = restTemplate.postForEntity("https://lm-as-service.vercel.app/cv", entity, Object.class);
+        ResponseEntity<Object> response = restTemplate.postForEntity(EndpointConstants.MATCHING_SERVICE + "/cv", entity, Object.class);
         return response;
     }
 

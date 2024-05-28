@@ -1,4 +1,4 @@
-package com.BE.dto.job;
+package com.BE.dto.job.application;
 
 import java.util.UUID;
 
@@ -10,4 +10,5 @@ import lombok.Data;
 public class JobApplicationRequestDTO {
     private UUID jobId;
     private UUID cvId;
+    private Object experience;
 }

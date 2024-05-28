@@ -11,17 +11,23 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.BE.constants.EndpointConstants;
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
 import com.BE.dto.InterviewChatDTO;
 import com.BE.dto.antiCheat.EvaluationDTO;
-import com.BE.dto.job.JobApplicationDTO;
-import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobResponseDTO;
+import com.BE.dto.job.application.JobApplicationDTO;
+import com.BE.dto.job.application.JobApplicationResultDTO;
+import com.BE.dto.job.matching.JobMatchingDTO;
+import com.BE.dto.job.matching.MatchingRequestDTO;
+import com.BE.dto.job.matching.MatchingResponseDTO;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
@@ -29,12 +35,15 @@ import com.BE.entities.User;
 import com.BE.repositories.JobApplicationRepository;
 import com.BE.repositories.JobRepository;
 import com.BE.repositories.projections.JobApplicationProjection.JobApplicationUserJobProjection;
+import com.BE.repositories.projections.JobProjection;
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.user.UserService;
-import com.BE.repositories.projections.JobProjection;
 
 @Service
 public class JobService {
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @Autowired
     UserService userService;
@@ -58,7 +67,7 @@ public class JobService {
                 .id(job.getId())
                 .title(job.getTitle())
                 .description(job.getDescription())
-                .priorityMajors(job.getPriorityMajors())
+                .majors(job.getMajors())
                 .skills(job.getSkills())
                 .userId(job.getUser().getId())
                 .name(job.getUser().getName())
@@ -128,13 +137,13 @@ public class JobService {
         }
     }
 
-    public PostJobResponseDTO createJob(String title, String description, List<String> priorityMajors,
+    public PostJobResponseDTO createJob(String title, String description, List<String> majors,
             List<String> skills, String username) {
         User user = userService.getUserByEmail(username);
         Job job = Job.builder()
                 .title(title)
                 .description(description)
-                .priorityMajors(priorityMajors)
+                .majors(majors)
                 .skills(skills)
                 .user(user)
                 .status(JobStatus.OPEN)
@@ -143,8 +152,9 @@ public class JobService {
         JobResultDTO jobResultDTO = JobResultDTO.builder()
                 .id(job.getId())
                 .title(job.getTitle())
+                .status(job.getStatus())
                 .description(job.getDescription())
-                .priorityMajors(job.getPriorityMajors())
+                .majors(job.getMajors())
                 .skills(job.getSkills())
                 .userId(job.getUser().getId())
                 .name(job.getUser().getName())
@@ -206,6 +216,8 @@ public class JobService {
         JobApplicationDTO jobApplicationDTO = JobApplicationDTO.builder()
                 .id(jobApplication.getId())
                 .status(jobApplication.getStatus())
+                .relevanceScore(jobApplication.getRelevanceScore())
+                .isRelevant(jobApplication.getIsRelevant())
                 .jobId(jobApplication.getJob().getId())
                 .jobTitle(jobApplication.getJob().getTitle())
                 .recruiterId(jobApplication.getJob().getUser().getId())
@@ -223,7 +235,7 @@ public class JobService {
         }
     }
 
-    public JobApplicationDTO apply(UUID jobId, UUID cvId, String username) {
+    public JobApplicationDTO apply(UUID jobId, UUID cvId, Object experience, String username) {
         User user = userService.getUserByEmail(username);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
         Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
@@ -233,11 +245,37 @@ public class JobService {
         if (existingJobApplication.isEmpty()) {
             JobApplication jobApplication = JobApplication.builder()
                     .status(JobApplicationStatus.PENDING)
+                    .isRelevant(false)
                     .job(job)
                     .user(user)
                     .cv(cv)
                     .build();
+
             jobApplicationRepository.save(jobApplication);
+
+            // getMatching
+            MatchingRequestDTO matchingRequestDTO = new MatchingRequestDTO(
+                    experience,
+                    JobMatchingDTO.builder()
+                            .minYoE(job.getYearsOfExperience())
+                            .role(job.getTitle())
+                            .jobDesc(job.getDescription())
+                            .majors(job.getMajors())
+                            .skills(job.getSkills())
+                            .build());
+            ResponseEntity<MatchingResponseDTO> response = restTemplate.postForEntity(
+                    EndpointConstants.MATCHING_SERVICE + "/cv/classify",
+                    matchingRequestDTO, MatchingResponseDTO.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                jobApplication.setRelevanceScore(response.getBody().getRelevanceScore());
+                jobApplication.setIsRelevant(response.getBody().getIsRelevant());
+            } else {
+                throw new IllegalArgumentException("Failed to get matching");
+            }
+
+            jobApplicationRepository.save(jobApplication);
+
             return JobApplicationDTO.builder()
                     .id(jobApplication.getId())
                     .status(jobApplication.getStatus())
@@ -248,7 +286,7 @@ public class JobService {
                     .userId(jobApplication.getUser().getId())
                     .userName(jobApplication.getUser().getName())
                     .fileName(jobApplication.getCv().getFileName())
-                    .cvUrl(curriculumVitaeService.get(jobApplication.getId(), username))
+                    .cvUrl(curriculumVitaeService.get(cvId, username))
                     .build();
         } else if (existingJobApplication.isPresent()) {
             throw new IllegalArgumentException("You have already applied for this job");

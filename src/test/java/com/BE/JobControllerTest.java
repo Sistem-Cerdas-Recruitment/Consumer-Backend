@@ -22,12 +22,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.BE.constants.JobApplicationStatus;
 import com.BE.controllers.JobController;
-import com.BE.dto.job.JobApplicationDTO;
-import com.BE.dto.job.JobApplicationRequestDTO;
-import com.BE.dto.job.JobApplicationResultDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
+import com.BE.dto.job.application.JobApplicationDTO;
+import com.BE.dto.job.application.JobApplicationRequestDTO;
+import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.services.job.JobService;
 
 import lombok.extern.log4j.Log4j2;
@@ -201,7 +201,7 @@ class JobControllerTest {
     @Test
     void testPostJob() {
         // Arrange
-        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Description 1", List.of("Java"), List.of("Spring Boot"));
+        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Desc 1", 1, List.of("Comp Sci"), List.of("Java"));
 
         // Act
         ResponseEntity<PostJobResponseDTO> response = jobController.postJob(postJobRequestDTO);
@@ -214,14 +214,14 @@ class JobControllerTest {
     @Test
     void testApplyForJob() {
         // Arrange
-        JobApplicationRequestDTO jobApplicationRequestDTO = new JobApplicationRequestDTO(UUID.randomUUID(), UUID.randomUUID());
+        JobApplicationRequestDTO jobApplicationRequestDTO = new JobApplicationRequestDTO(UUID.randomUUID(), UUID.randomUUID(), null);
 
         // Act
         ResponseEntity<JobApplicationDTO> response = jobController.applyForJob(jobApplicationRequestDTO);
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        verify(jobService, times(1)).apply(eq(jobApplicationRequestDTO.getJobId()), eq(jobApplicationRequestDTO.getCvId()), eq("username"));
+        verify(jobService, times(1)).apply(eq(jobApplicationRequestDTO.getJobId()), eq(jobApplicationRequestDTO.getCvId()), eq(null), eq("username"));
     }
 }
 
