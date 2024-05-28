@@ -1,4 +1,5 @@
 package com.BE;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -16,7 +17,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -31,6 +33,7 @@ import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.services.job.JobService;
 
 import lombok.extern.log4j.Log4j2;
+
 @Log4j2
 class JobControllerTest {
 
@@ -40,9 +43,6 @@ class JobControllerTest {
     @Mock
     private SecurityContext securityContext;
 
-    @Mock
-    private Authentication authentication;
-
     private JobController jobController;
 
     @BeforeEach
@@ -51,16 +51,20 @@ class JobControllerTest {
         jobController = new JobController();
         jobController.jobService = jobService;
         SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn("username");
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                "username", null, List.of(new SimpleGrantedAuthority("ROLE_RECRUITER"), new SimpleGrantedAuthority("ROLE_CANDIDATE")));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        when(securityContext.getAuthentication()).thenReturn(authenticationToken);
     }
 
     @Test
     void testGetAllJobs() {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null, UUID.randomUUID(), "User 1", false));
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null, UUID.randomUUID(), "User 2", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null,
+                UUID.randomUUID(), "User 1", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
+                UUID.randomUUID(), "User 2", false));
         when(jobService.findAllOpenJobs("username")).thenReturn(jobs);
 
         // Act
@@ -69,7 +73,7 @@ class JobControllerTest {
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         Map<String, List<JobResultDTO>> responseBody = response.getBody();
-        if(responseBody == null) {
+        if (responseBody == null) {
             throw new AssertionError("Response body is null");
         }
         assertEquals(jobs, responseBody.get("data"));
@@ -80,8 +84,10 @@ class JobControllerTest {
     void testGetPostedJobs() {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null, UUID.randomUUID(), "User 1", false));
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null, UUID.randomUUID(), "User 2", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null,
+                UUID.randomUUID(), "User 1", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
+                UUID.randomUUID(), "User 2", false));
         when(jobService.findAllByUser("username")).thenReturn(jobs);
 
         // Act
@@ -90,7 +96,7 @@ class JobControllerTest {
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         Map<String, List<JobResultDTO>> responseBody = response.getBody();
-        if(responseBody == null) {
+        if (responseBody == null) {
             throw new AssertionError("Response body is null");
         }
         assertEquals(jobs, responseBody.get("data"));
@@ -114,7 +120,8 @@ class JobControllerTest {
     void testGetJob() {
         // Arrange
         UUID jobId = UUID.randomUUID();
-        JobResultDTO job = new JobResultDTO(jobId, "Job 1", "Description 1", List.of(), List.of(), null, UUID.randomUUID(), "User 1", false);
+        JobResultDTO job = new JobResultDTO(jobId, "Job 1", "Description 1", List.of(), List.of(), null,
+                UUID.randomUUID(), "User 1", false);
         when(jobService.findJob(jobId)).thenReturn(job);
 
         // Act
@@ -123,7 +130,7 @@ class JobControllerTest {
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         JobResultDTO responseBody = response.getBody();
-        if(responseBody == null) {
+        if (responseBody == null) {
             throw new AssertionError("Response body is null");
         }
         assertEquals(job, responseBody);
@@ -161,11 +168,40 @@ class JobControllerTest {
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         Map<String, List<JobApplicationResultDTO>> responseBody = response.getBody();
-        if(responseBody == null) {
+        if (responseBody == null) {
             throw new AssertionError("Response body is null");
         }
         assertEquals(jobApplications, responseBody.get("data"));
         verify(jobService, times(1)).findApplications(jobId, "username");
+    }
+
+    @Test
+    void testPostJob() {
+        // Arrange
+        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Desc 1", 1, List.of("Comp Sci"), List.of("Java"));
+
+        // Act
+        ResponseEntity<PostJobResponseDTO> response = jobController.postJob(postJobRequestDTO);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        verify(jobService, times(1)).createJob(eq("Job 1"), eq("Desc 1"), eq(List.of("Comp Sci")), eq(List.of("Java")), eq("username"));
+    }
+
+    @Test
+    void testApplyForJob() {
+        // Arrange
+        JobApplicationRequestDTO jobApplicationRequestDTO = new JobApplicationRequestDTO(UUID.randomUUID(),
+                UUID.randomUUID(), null);
+
+        // Act
+        ResponseEntity<JobApplicationDTO> response = jobController.applyForJob(jobApplicationRequestDTO);
+        log.info("Response: {}", response);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        verify(jobService, times(1)).apply(eq(jobApplicationRequestDTO.getJobId()),
+                eq(jobApplicationRequestDTO.getCvId()), eq(null), eq("username"));
     }
 
     @Test
@@ -186,42 +222,12 @@ class JobControllerTest {
 
         // Act
         ResponseEntity<JobApplicationDTO> response = jobController.getApplication(applicationId);
-        log.info("Response: {}", response);
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         JobApplicationDTO responseBody = response.getBody();
-        if(responseBody == null) {
-            throw new AssertionError("Response body is null");
-        }
+
         assertEquals(jobApplication, responseBody);
         verify(jobService, times(1)).getRecruiterJobApplication(applicationId, "username");
     }
-
-    @Test
-    void testPostJob() {
-        // Arrange
-        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Desc 1", 1, List.of("Comp Sci"), List.of("Java"));
-
-        // Act
-        ResponseEntity<PostJobResponseDTO> response = jobController.postJob(postJobRequestDTO);
-
-        // Assert
-        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        verify(jobService, times(1)).createJob(eq("Job 1"), eq("Description 1"), eq(List.of("Java")), eq(List.of("Spring Boot")), eq("username"));
-    }
-
-    @Test
-    void testApplyForJob() {
-        // Arrange
-        JobApplicationRequestDTO jobApplicationRequestDTO = new JobApplicationRequestDTO(UUID.randomUUID(), UUID.randomUUID(), null);
-
-        // Act
-        ResponseEntity<JobApplicationDTO> response = jobController.applyForJob(jobApplicationRequestDTO);
-
-        // Assert
-        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        verify(jobService, times(1)).apply(eq(jobApplicationRequestDTO.getJobId()), eq(jobApplicationRequestDTO.getCvId()), eq(null), eq("username"));
-    }
 }
-
