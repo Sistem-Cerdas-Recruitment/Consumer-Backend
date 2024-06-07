@@ -297,17 +297,17 @@ public class JobService {
     public JobApplication updateJobApplication(UUID applicationId, JobApplicationStatus status,
             List<EvaluationDTO> evaluations) {
         JobApplication jobApplication = getJobApplication(applicationId);
-        if (evaluations.size() != jobApplication.getInterviewChatLogs().size()) {
+        if (evaluations.size() != jobApplication.getInterviewChatHistory().size()) {
             throw new IllegalArgumentException("Invalid number of evaluations");
         }
         jobApplication.setStatus(status);
-        List<InterviewChatDTO> interviewChatLogs = jobApplication.getInterviewChatLogs();
+        List<InterviewChatDTO> interviewChatHistory = jobApplication.getInterviewChatHistory();
 
         for (int i = 0; i < evaluations.size(); i++) {
-            interviewChatLogs.get(i).setPredictedClass(evaluations.get(i).getPredictedClass());
-            interviewChatLogs.get(i).setConfidence(evaluations.get(i).getConfidence());
-            interviewChatLogs.get(i).setSecondaryModelPrediction(evaluations.get(i).getSecondaryModelPrediction());
-            interviewChatLogs.get(i).setMainModelProbability(evaluations.get(i).getMainModelProbability());
+            interviewChatHistory.get(i).setPredictedClass(evaluations.get(i).getPredictedClass());
+            interviewChatHistory.get(i).setConfidence(evaluations.get(i).getConfidence());
+            interviewChatHistory.get(i).setSecondaryModelPrediction(evaluations.get(i).getSecondaryModelPrediction());
+            interviewChatHistory.get(i).setMainModelProbability(evaluations.get(i).getMainModelProbability());
         }
         return jobApplicationRepository.save(jobApplication);
     }

@@ -22,8 +22,10 @@ public class InterviewService {
         JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
         if (jobApplication.getUser().getUsername().equals(username)
                 && jobApplication.getStatus().equals(JobApplicationStatus.INTERVIEW)) {
-            return new InterviewDTO(InterviewStatus.ON_GOING, jobApplication.getInterviewChatLogs());
-        } else {
+            return new InterviewDTO(InterviewStatus.ON_GOING, jobApplication.getInterviewChatHistory());
+        } else if (jobApplication.getJob().getUser().getUsername().equals(username)) {
+            return new InterviewDTO(null, jobApplication.getInterviewChatHistory());
+        }else {
             throw new AccessDeniedException("You are not authorized to access this resource");
         }
     }
@@ -32,8 +34,8 @@ public class InterviewService {
         JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
         if (jobApplication.getUser().getUsername().equals(username)
                 && jobApplication.getStatus().equals(JobApplicationStatus.INTERVIEW)) {
-            InterviewChatDTO interviewChatLogDTO = jobApplication.getInterviewChatLogs()
-                    .get(jobApplication.getInterviewChatLogs().size() - 1);
+            InterviewChatDTO interviewChatLogDTO = jobApplication.getInterviewChatHistory()
+                    .get(jobApplication.getInterviewChatHistory().size() - 1);
             interviewChatLogDTO.setAnswer(chatLog.getAnswer());
             interviewChatLogDTO.setBackspaceCount(chatLog.getBackspaceCount());
             interviewChatLogDTO.setLetterClickCounts(chatLog.getLetterClickCounts());

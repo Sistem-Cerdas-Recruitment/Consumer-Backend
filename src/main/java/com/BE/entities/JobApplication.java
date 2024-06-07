@@ -29,7 +29,7 @@ public class JobApplication extends BaseEntity{
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private List<InterviewChatDTO> interviewChatLogs;
+    private List<InterviewChatDTO> interviewChatHistory;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
