@@ -34,7 +34,7 @@ public class AuthService {
 
         Role role = Role.valueOf(registerRequest.getRole());
 
-        if(userService.getUserByEmail(registerRequest.getEmail()) != null) {
+        if(userService.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("User already exists");
         } else if(role != Role.CANDIDATE && role != Role.RECRUITER) {
             throw new IllegalArgumentException("Invalid role");

@@ -27,6 +27,10 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     public void saveUser(User user) {
         userRepository.saveAndFlush(user);
     }
