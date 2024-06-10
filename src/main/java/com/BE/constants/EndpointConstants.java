@@ -1,5 +1,5 @@
 package com.BE.constants;
 
 public class EndpointConstants {
-    public static final String MATCHING_SERVICE = "https://lm-as-service.vercel.app";
+    public static final String MATCHING_SERVICE = "https://mrfirdauss-api-ta.hf.space/";
 }

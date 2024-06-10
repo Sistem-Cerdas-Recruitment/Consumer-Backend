@@ -39,7 +39,10 @@ import com.BE.repositories.projections.JobProjection;
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.user.UserService;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 public class JobService {
 
     @Autowired
@@ -263,8 +266,10 @@ public class JobService {
                             .skills(job.getSkills())
                             .build());
             ResponseEntity<MatchingResponseDTO> response = restTemplate.postForEntity(
-                    EndpointConstants.MATCHING_SERVICE + "/cv/classify",
+                    EndpointConstants.MATCHING_SERVICE + "/classify",
                     matchingRequestDTO, MatchingResponseDTO.class);
+
+            log.info(response.getBody());
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 jobApplication.setRelevanceScore(response.getBody().getRelevanceScore());
@@ -281,6 +286,9 @@ public class JobService {
                     .jobId(jobApplication.getJob().getId())
                     .jobTitle(jobApplication.getJob().getTitle())
                     .recruiterId(jobApplication.getJob().getUser().getId())
+                    .relevanceScore(jobApplication.getRelevanceScore())
+                    .isRelevant(jobApplication.getIsRelevant())
+                    .experience(experience)
                     .recruiterName(jobApplication.getJob().getUser().getName())
                     .userId(jobApplication.getUser().getId())
                     .userName(jobApplication.getUser().getName())
