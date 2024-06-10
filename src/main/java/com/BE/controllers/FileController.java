@@ -57,7 +57,7 @@ public class FileController {
         return bucketService.createPresignedGetUrl(fileName);
     }
 
-    @SuppressWarnings("null")
+    // @SuppressWarnings("null")
     @PostMapping("/cv/upload")
     public ResponseEntity<Object> uploadCV(@RequestParam("file") MultipartFile file) {
 

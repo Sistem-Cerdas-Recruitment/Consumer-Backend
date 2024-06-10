@@ -302,7 +302,7 @@ public class JobService {
         }
     }
 
-    public JobApplication updateJobApplication(UUID applicationId, JobApplicationStatus status,
+    public JobApplication updateJobApplicationInterview(UUID applicationId, JobApplicationStatus status,
             List<EvaluationDTO> evaluations) {
         JobApplication jobApplication = getJobApplication(applicationId);
         if (evaluations.size() != jobApplication.getInterviewChatHistory().size()) {

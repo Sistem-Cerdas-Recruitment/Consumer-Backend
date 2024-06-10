@@ -32,6 +32,6 @@ public class AntiCheatService {
     }
 
     public void updateResult(AntiCheatResultDTO body) {
-        jobService.updateJobApplication(body.getJobApplicationId(), JobApplicationStatus.EVALUATED, body.getEvaluations());
+        jobService.updateJobApplicationInterview(body.getJobApplicationId(), JobApplicationStatus.EVALUATED, body.getEvaluations());
     }
 }
