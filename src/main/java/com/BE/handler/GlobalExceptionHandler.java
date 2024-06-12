@@ -45,4 +45,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({ RuntimeException.class })
+    public ResponseEntity<Object> handleRuntimeException(Exception ex) {
+
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

@@ -1,5 +1,6 @@
 package com.BE.services.job;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -19,8 +20,9 @@ import org.springframework.web.client.RestTemplate;
 import com.BE.constants.EndpointConstants;
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
-import com.BE.dto.InterviewChatDTO;
 import com.BE.dto.antiCheat.EvaluationDTO;
+import com.BE.dto.interview.InterviewChatDTO;
+import com.BE.dto.interview.InterviewChatHistoryDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
@@ -229,7 +231,8 @@ public class JobService {
                     .userId(jobApplication.getUser().getId())
                     .userName(jobApplication.getUser().getName())
                     .fileName(jobApplication.getCv().getFileName())
-                    .cvUrl(curriculumVitaeService.get(jobApplication.getCv().getId(), jobApplication.getUser().getEmail()))
+                    .cvUrl(curriculumVitaeService.get(jobApplication.getCv().getId(),
+                            jobApplication.getUser().getEmail()))
                     .build();
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
@@ -247,6 +250,10 @@ public class JobService {
             JobApplication jobApplication = JobApplication.builder()
                     .status(JobApplicationStatus.PENDING)
                     .isRelevant(false)
+                    .interviewChatHistory(
+                            InterviewChatHistoryDTO.builder().competencies(job.getSkills())
+                                    .chatHistories(new ArrayList<>())
+                                    .build())
                     .experience(experience)
                     .job(job)
                     .user(user)
@@ -305,18 +312,27 @@ public class JobService {
     public JobApplication updateJobApplicationInterview(UUID applicationId, JobApplicationStatus status,
             List<EvaluationDTO> evaluations) {
         JobApplication jobApplication = getJobApplication(applicationId);
-        if (evaluations.size() != jobApplication.getInterviewChatHistory().size()) {
+        int chatHistorySize = jobApplication.getInterviewChatHistory().getChatHistories().stream()
+                .mapToInt(List::size)
+                .sum();
+        if (evaluations.size() != chatHistorySize) {
             throw new IllegalArgumentException("Invalid number of evaluations");
         }
         jobApplication.setStatus(status);
-        List<InterviewChatDTO> interviewChatHistory = jobApplication.getInterviewChatHistory();
+        List<List<InterviewChatDTO>> interviewChatHistories = jobApplication.getInterviewChatHistory()
+                .getChatHistories();
 
-        for (int i = 0; i < evaluations.size(); i++) {
-            interviewChatHistory.get(i).setPredictedClass(evaluations.get(i).getPredictedClass());
-            interviewChatHistory.get(i).setConfidence(evaluations.get(i).getConfidence());
-            interviewChatHistory.get(i).setSecondaryModelPrediction(evaluations.get(i).getSecondaryModelPrediction());
-            interviewChatHistory.get(i).setMainModelProbability(evaluations.get(i).getMainModelProbability());
+        int evaluationIndex = 0;
+        for (List<InterviewChatDTO> interviewChatHistory : interviewChatHistories) {
+            for (InterviewChatDTO chatHistory : interviewChatHistory) {
+                chatHistory.setPredictedClass(evaluations.get(evaluationIndex).getPredictedClass());
+                chatHistory.setConfidence(evaluations.get(evaluationIndex).getConfidence());
+                chatHistory.setSecondaryModelPrediction(evaluations.get(evaluationIndex).getSecondaryModelPrediction());
+                chatHistory.setMainModelProbability(evaluations.get(evaluationIndex).getMainModelProbability());
+                evaluationIndex++;
+            }
         }
+
         return jobApplicationRepository.save(jobApplication);
     }
 

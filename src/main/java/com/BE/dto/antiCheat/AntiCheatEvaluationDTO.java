@@ -3,7 +3,7 @@ package com.BE.dto.antiCheat;
 import java.util.List;
 import java.util.UUID;
 
-import com.BE.dto.InterviewChatDTO;
+import com.BE.dto.interview.InterviewChatDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;

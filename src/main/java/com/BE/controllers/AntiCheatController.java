@@ -22,9 +22,9 @@ public class AntiCheatController {
     private AntiCheatService antiCheatService;
 
     @PostMapping("/test")
-    public String antiCheat(@RequestBody AntiCheatEvaluationDTO body) {
+    public String antiCheat(@RequestBody AntiCheatEvaluationDTO request) {
         try {
-            antiCheatService.checkForCheating(body);
+            antiCheatService.checkForCheating(request);
             return "success";
         } catch (Exception e) {
             return "Failed to process evaluation: " + e;
@@ -32,9 +32,9 @@ public class AntiCheatController {
     }
 
     @PatchMapping("/result")
-    public ResponseEntity<String> updateResult(@RequestBody @Validated AntiCheatResultDTO body) {
+    public ResponseEntity<String> updateResult(@RequestBody @Validated AntiCheatResultDTO request) {
 
-        antiCheatService.updateResult(body);
+        antiCheatService.updateResult(request);
         return ResponseEntity.ok("success");
     }
 }

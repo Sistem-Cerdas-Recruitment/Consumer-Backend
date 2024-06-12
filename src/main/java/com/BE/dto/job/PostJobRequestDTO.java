@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -23,8 +24,10 @@ public class PostJobRequestDTO {
     private int yearsOfExperience;
 
     @NotBlank(message = "majors are required")
+    @NotEmpty(message = "majors cannot be empty")
     private List<String> majors;
 
     @NotBlank(message = "Skills are required")
+    @NotEmpty(message = "Skills cannot be empty")
     private List<String> skills;
 }

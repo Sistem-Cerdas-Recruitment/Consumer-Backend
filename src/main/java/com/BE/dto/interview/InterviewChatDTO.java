@@ -1,4 +1,4 @@
-package com.BE.dto;
+package com.BE.dto.interview;
 
 import java.util.Map;
 
