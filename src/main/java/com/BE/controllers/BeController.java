@@ -3,6 +3,7 @@ package com.BE.controllers;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import jakarta.annotation.security.RolesAllowed;
 @RestController
 @RequestMapping("/api")
 @RolesAllowed("ADMIN")
+@CrossOrigin(origins = "*")
 public class BeController {
 
     @Autowired

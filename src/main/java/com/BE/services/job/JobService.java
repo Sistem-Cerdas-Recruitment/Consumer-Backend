@@ -27,6 +27,7 @@ import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
 import com.BE.dto.job.application.JobApplicationResultDTO;
+import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.dto.job.matching.JobMatchingDTO;
 import com.BE.dto.job.matching.MatchingRequestDTO;
 import com.BE.dto.job.matching.MatchingResponseDTO;
@@ -234,6 +235,27 @@ public class JobService {
                     .cvUrl(curriculumVitaeService.get(jobApplication.getCv().getId(),
                             jobApplication.getUser().getEmail()))
                     .build();
+        } else {
+            throw new AccessDeniedException("You are not authorized to access this resource");
+        }
+    }
+
+    public JobApplicationStatusResponseDTO updateApplicationStatus(UUID applicationId, Boolean status,
+            String username) {
+        JobApplication jobApplication = getJobApplication(applicationId);
+        if (jobApplication.getJob().getUser().getEmail().equals(username)) {
+            if (jobApplication.getStatus().equals(JobApplicationStatus.PENDING)) {
+                jobApplication
+                        .setStatus(status ? JobApplicationStatus.AWAITING_INTERVIEW : JobApplicationStatus.REJECTED);
+            } else if (jobApplication.getStatus().equals(JobApplicationStatus.EVALUATED)) {
+                jobApplication.setStatus(status ? JobApplicationStatus.ACCEPTED : JobApplicationStatus.REJECTED);
+            } else {
+                throw new IllegalArgumentException("Application status cannot be updated");
+            }
+            jobApplicationRepository.save(jobApplication);
+            JobApplicationStatusResponseDTO jobApplicationStatusResponseDTO = new JobApplicationStatusResponseDTO(
+                    jobApplication.getStatus());
+            return jobApplicationStatusResponseDTO;
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
         }

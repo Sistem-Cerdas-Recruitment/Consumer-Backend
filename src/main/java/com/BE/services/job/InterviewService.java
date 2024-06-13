@@ -60,7 +60,6 @@ public class InterviewService {
             interviewChatLogDTO.setLetterClickCounts(chatLog.getLetterClickCounts());
 
             jobService.save(jobApplication);
-            // return chatLog;
             // TODO: Request for the next question
             GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()), chatHistory.getChatHistories().get(competencyIndex));
             ResponseEntity<GenerateQuestionResponseDTO> response = restTemplate.postForEntity(EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO, GenerateQuestionResponseDTO.class);

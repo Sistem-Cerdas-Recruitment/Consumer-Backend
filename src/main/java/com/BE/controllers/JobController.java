@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +24,15 @@ import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
 import com.BE.dto.job.application.JobApplicationRequestDTO;
 import com.BE.dto.job.application.JobApplicationResultDTO;
+import com.BE.dto.job.application.JobApplicationStatusRequestDTO;
+import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.services.job.JobService;
 
 import jakarta.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping("/api/job")
+@CrossOrigin(origins = "*")
 public class JobController {
 
     @Autowired
@@ -66,6 +70,15 @@ public class JobController {
         return ResponseEntity.ok(job);
     }
 
+    @PostMapping("/post")
+    @RolesAllowed("RECRUITER")
+    public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody PostJobRequestDTO postJobRequestDTO) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        PostJobResponseDTO body = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(),
+                postJobRequestDTO.getMajors(), postJobRequestDTO.getSkills(), username);
+        return ResponseEntity.ok().body(body);
+    }
+
     @GetMapping("{jobId}/applications")
     @RolesAllowed("RECRUITER")
     public ResponseEntity<Map<String, List<JobApplicationResultDTO>>> getJobApplications(@PathVariable UUID jobId) {
@@ -79,7 +92,6 @@ public class JobController {
 
     @GetMapping("/application/{applicationId}")
     public ResponseEntity<JobApplicationDTO> getApplication(@PathVariable UUID applicationId) {
-        // TODO: Check
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobApplicationDTO jobApplication;
         
@@ -92,13 +104,12 @@ public class JobController {
         return ResponseEntity.ok(jobApplication);
     }
 
-    @PostMapping("/post")
+    @PatchMapping("/application/status")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody @Validated PostJobRequestDTO postJobRequestDTO) {
+    public ResponseEntity<JobApplicationStatusResponseDTO> updateApplicationStatus(@RequestBody JobApplicationStatusRequestDTO request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        PostJobResponseDTO body = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(),
-                postJobRequestDTO.getMajors(), postJobRequestDTO.getSkills(), username);
-        return ResponseEntity.ok().body(body);
+        JobApplicationStatusResponseDTO body = jobService.updateApplicationStatus(request.getJobApplicationId(), request.getIsAccepted(), username);
+        return ResponseEntity.ok(body);
     }
 
     @PostMapping("/apply")
