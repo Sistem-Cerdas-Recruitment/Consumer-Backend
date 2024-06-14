@@ -23,6 +23,8 @@ import com.BE.dto.interview.InterviewResponseDTO;
 import com.BE.entities.JobApplication;
 import com.BE.services.antiCheat.AntiCheatService;
 
+import jakarta.annotation.security.RolesAllowed;
+
 @Service
 public class InterviewService {
 
@@ -132,6 +134,13 @@ public class InterviewService {
             throw new AccessDeniedException("You are not authorized to access this resource");
         }
 
-    }       
+    }
+    
+    @RolesAllowed("ADMIN")
+    public void score(UUID jobApplicationId, Float score) {
+        JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
+        jobApplication.setInterviewScore(score);
+        jobService.save(jobApplication);
+    }
             
 }

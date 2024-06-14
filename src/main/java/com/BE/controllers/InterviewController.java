@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.BE.dto.interview.InterviewAnswerRequestDTO;
 import com.BE.dto.interview.InterviewDTO;
 import com.BE.dto.interview.InterviewResponseDTO;
+import com.BE.dto.interview.InterviewScoreRequestDTO;
 import com.BE.dto.interview.InterviewStartRequestDTO;
 import com.BE.services.job.InterviewService;
 
@@ -40,6 +41,12 @@ public class InterviewController {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         InterviewResponseDTO body = interviewService.answer(request.getJobApplicationId(), username, request.getChat());
         return ResponseEntity.ok(body);
+    }
+
+    @PatchMapping("/score")
+    public ResponseEntity<String> scoreInterview(@RequestBody InterviewScoreRequestDTO request) {
+        interviewService.score(request.getJobApplicationId(), request.getInterviewScore());
+        return ResponseEntity.ok("Success");
     }
 
     @PostMapping("/start")

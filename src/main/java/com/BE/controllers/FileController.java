@@ -31,7 +31,7 @@ import com.BE.services.storage.BucketService;
 
 @RestController
 @RequestMapping("/api/file")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "true", allowCredentials = "true")
 public class FileController {
 
     @Autowired

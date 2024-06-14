@@ -35,6 +35,8 @@ public class JobApplication extends BaseEntity{
 
     private Double relevanceScore;
 
+    private Float interviewScore;
+
     private Boolean isRelevant;
     
     @ManyToOne
