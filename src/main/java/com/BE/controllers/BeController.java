@@ -58,9 +58,9 @@ public class BeController {
     }
 
     @PostMapping("/testKafka")
-    public String testKafka(@RequestBody Map<String, String> body) {
+    public String testKafka(@RequestBody Map<String, Object> body) {
         try {
-            kafkaProducer.sendMessage(body.get("topic"), body.get("message"));
+            kafkaProducer.sendMessage((String) body.get("topic"), body.get("message"));
             return "Message sent successfully!";
         } catch (Exception e) {
             return "Failed to send message: " + e;

@@ -5,6 +5,9 @@ spring.jpa.hibernate.ddl-auto=update
 
 kafka.bootstrap-servers=localhost:9092
 
+aws.access-key=access-key
+aws.secret-key=secret-key
+service.x-api-key=api-key
 jwt.secret=secret
 spring.datasource.url=jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/user
 spring.datasource.schema=public
