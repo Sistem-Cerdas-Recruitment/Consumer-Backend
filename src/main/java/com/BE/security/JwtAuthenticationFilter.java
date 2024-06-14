@@ -41,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String userEmail;
         List<SimpleGrantedAuthority> roles;
         final Cookie[] cookies = request.getCookies();
+        final String authHeader = request.getHeader("Authorization");
         final String requestXApiKey = request.getHeader("x-api-key");
 
         if (xApiKey.equals(requestXApiKey)) {
@@ -59,6 +60,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     break;
                 }
             }
+        }
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
         }
 
         if (jwt != null) {
