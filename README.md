@@ -40,11 +40,36 @@ mvn clean install
 cp src/main/resources/application.properties.example src/main/resources/application.properties
 ```
 
-5. Start the server
+4. Start the server
 
 ```bash
 java -jar target/BE-v1.jar
 ```
+
+### Docker
+
+1. Build the Docker image
+
+```bash
+mvn spring-boot:build-image -Dspring-boot.build-image.imageName=<image-name>
+```
+
+2. Run the Docker container
+
+```bash
+docker run -p 8080:8080 <image-name>
+```
+
+### Environment Variables
+
+- `spring.datasource.url` - Database URL
+- `spring.datasource.schema` - Database schema
+- `spring.datasource.username` - Database username
+- `spring.datasource.password` - Database password
+- `jwt.secret` - JWT secret key
+- `aws.access.key` - AWS access key
+- `aws.secret.key` - AWS secret key
+- `service.x-api-key` - API key for external services
 
 ### Documentation
 

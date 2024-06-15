@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 VOLUME /tmp
 RUN mkdir /upload-dir
 COPY target/BE-v1.jar app.jar
