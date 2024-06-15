@@ -19,9 +19,12 @@ import com.BE.dto.interview.GenerateQuestionResponseDTO;
 import com.BE.dto.interview.InterviewChatDTO;
 import com.BE.dto.interview.InterviewChatHistoryDTO;
 import com.BE.dto.interview.InterviewDTO;
+import com.BE.dto.interview.InterviewEvaluationDTO;
 import com.BE.dto.interview.InterviewResponseDTO;
 import com.BE.entities.JobApplication;
 import com.BE.services.antiCheat.AntiCheatService;
+import com.BE.services.kafka.KafkaProducer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.security.RolesAllowed;
 
@@ -30,6 +33,12 @@ public class InterviewService {
 
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
     @Autowired
     private JobService jobService;
@@ -46,6 +55,15 @@ public class InterviewService {
             return new InterviewDTO(null, jobApplication.getInterviewChatHistory());
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
+        }
+    }
+    
+    public void evaluteInterview(InterviewEvaluationDTO interviewEvaluationDTO) {
+        try {
+            String payload = objectMapper.writeValueAsString(interviewEvaluationDTO);
+            kafkaProducer.sendMessage("ai-detector", payload);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send message: " + e.getMessage());
         }
     }
 
@@ -94,6 +112,13 @@ public class InterviewService {
                                 .data(chatHistory.getChatHistories().stream().flatMap(List::stream).toList())
                                 .build();
                         antiCheatService.checkForCheating(antiCheatEvaluationDTO);
+
+                        InterviewEvaluationDTO interviewEvaluationDTO = InterviewEvaluationDTO.builder()
+                                .jobApplicationId(jobApplicationId)
+                                .competences(chatHistory.getCompetencies())
+                                .transcript(chatHistory.getChatHistories())
+                                .build();
+                        evaluteInterview(interviewEvaluationDTO);
 
                         jobService.save(jobApplication);
                         return new InterviewResponseDTO(InterviewStatus.COMPLETED, "Interview Completed");
