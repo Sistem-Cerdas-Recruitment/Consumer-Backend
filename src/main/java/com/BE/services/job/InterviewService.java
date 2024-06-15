@@ -61,7 +61,7 @@ public class InterviewService {
     public void evaluteInterview(InterviewEvaluationDTO interviewEvaluationDTO) {
         try {
             String payload = objectMapper.writeValueAsString(interviewEvaluationDTO);
-            kafkaProducer.sendMessage("ai-detector", payload);
+            kafkaProducer.sendMessage("interview-evaluation", payload);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send message: " + e.getMessage());
         }
