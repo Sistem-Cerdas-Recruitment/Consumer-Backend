@@ -42,10 +42,7 @@ import com.BE.repositories.projections.JobProjection;
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.user.UserService;
 
-import lombok.extern.log4j.Log4j2;
-
 @Service
-@Log4j2
 public class JobService {
 
     @Autowired
@@ -298,11 +295,11 @@ public class JobService {
                     EndpointConstants.MATCHING_SERVICE + "/classify",
                     matchingRequestDTO, MatchingResponseDTO.class);
 
-            log.info(response.getBody());
+            MatchingResponseDTO responseBody = response.getBody();
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                jobApplication.setRelevanceScore(response.getBody().getRelevanceScore());
-                jobApplication.setIsRelevant(response.getBody().getIsRelevant());
+            if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
+                jobApplication.setRelevanceScore(responseBody.getRelevanceScore());
+                jobApplication.setIsRelevant(responseBody.getIsRelevant());
             } else {
                 throw new IllegalArgumentException("Failed to get matching");
             }

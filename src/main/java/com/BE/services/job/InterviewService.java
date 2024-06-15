@@ -63,49 +63,67 @@ public class InterviewService {
 
             jobService.save(jobApplication);
             // TODO: Request for the next question
-            GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()), chatHistory.getChatHistories().get(competencyIndex));
-            ResponseEntity<GenerateQuestionResponseDTO> response = restTemplate.postForEntity(EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO, GenerateQuestionResponseDTO.class);
-            
-            if(!response.getStatusCode().is2xxSuccessful()){
+            GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(
+                    chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()),
+                    chatHistory.getChatHistories().get(competencyIndex));
+            ResponseEntity<GenerateQuestionResponseDTO> response = restTemplate.postForEntity(
+                    EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO,
+                    GenerateQuestionResponseDTO.class);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Failed to answer interview");
             }
+            GenerateQuestionResponseDTO generateQuestionResponseDTO = response.getBody();
+            if (generateQuestionResponseDTO != null) {
 
-            if(!response.getBody().getStatus()){
-                // Not Finished
-                chatHistory.getChatHistories().get(competencyIndex).add(InterviewChatDTO.builder().question(response.getBody().getResponse()).build());
-                jobService.save(jobApplication);
-                return new InterviewResponseDTO(InterviewStatus.ON_GOING, response.getBody().getResponse());
-            } else {
-                // Finished
-                chatHistory.setCompetencyIndex(competencyIndex + 1);
-                if(chatHistory.getCompetencyIndex() == chatHistory.getCompetencies().size()){
-                    jobApplication.setStatus(JobApplicationStatus.AWAITING_EVALUATION);
-
-                    // TODO: Evaluate the interview
-                    AntiCheatEvaluationDTO antiCheatEvaluationDTO = AntiCheatEvaluationDTO.builder()
-                            .jobApplicationId(jobApplicationId)
-                            .data(chatHistory.getChatHistories().stream().flatMap(List::stream).toList())
-                            .build();
-                    antiCheatService.checkForCheating(antiCheatEvaluationDTO);
-
+                if (!generateQuestionResponseDTO.getStatus()) {
+                    // Not Finished
+                    chatHistory.getChatHistories().get(competencyIndex)
+                            .add(InterviewChatDTO.builder().question(generateQuestionResponseDTO.getResponse()).build());
                     jobService.save(jobApplication);
-                    return new InterviewResponseDTO(InterviewStatus.COMPLETED, "Interview Completed");
+                    return new InterviewResponseDTO(InterviewStatus.ON_GOING, generateQuestionResponseDTO.getResponse());
                 } else {
-                    chatHistory.getChatHistories().add(new ArrayList<>());
-                    GenerateQuestionRequestDTO generateQuestionRequestDTO2 = new GenerateQuestionRequestDTO(chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()), chatHistory.getChatHistories().get(competencyIndex));
-                    ResponseEntity<GenerateQuestionResponseDTO> response2 = restTemplate.postForEntity(EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO2, GenerateQuestionResponseDTO.class);
-                    
-                    if(!response2.getStatusCode().is2xxSuccessful()){
-                        throw new RuntimeException("Failed to generate next interview question");
+                    // Finished
+                    chatHistory.setCompetencyIndex(competencyIndex + 1);
+                    if (chatHistory.getCompetencyIndex() == chatHistory.getCompetencies().size()) {
+                        jobApplication.setStatus(JobApplicationStatus.AWAITING_EVALUATION);
+
+                        // TODO: Evaluate the interview
+                        AntiCheatEvaluationDTO antiCheatEvaluationDTO = AntiCheatEvaluationDTO.builder()
+                                .jobApplicationId(jobApplicationId)
+                                .data(chatHistory.getChatHistories().stream().flatMap(List::stream).toList())
+                                .build();
+                        antiCheatService.checkForCheating(antiCheatEvaluationDTO);
+
+                        jobService.save(jobApplication);
+                        return new InterviewResponseDTO(InterviewStatus.COMPLETED, "Interview Completed");
+                    } else {
+                        chatHistory.getChatHistories().add(new ArrayList<>());
+                        GenerateQuestionRequestDTO generateQuestionRequestDTO2 = new GenerateQuestionRequestDTO(
+                                chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()),
+                                chatHistory.getChatHistories().get(competencyIndex));
+                        ResponseEntity<GenerateQuestionResponseDTO> response2 = restTemplate.postForEntity(
+                                EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO2,
+                                GenerateQuestionResponseDTO.class);
+
+                        if (!response2.getStatusCode().is2xxSuccessful()) {
+                            throw new RuntimeException("Failed to generate next interview question");
+                        }
+
+                        GenerateQuestionResponseDTO responseBody = response2.getBody();
+                        if (responseBody != null) {
+                            chatHistory.getChatHistories().get(competencyIndex)
+                                    .add(InterviewChatDTO.builder().question(responseBody.getResponse()).build());
+                            jobService.save(jobApplication);
+                            return new InterviewResponseDTO(InterviewStatus.ON_GOING, responseBody.getResponse());
+                        } else {
+                            throw new RuntimeException("Failed to get response body");
+                        }
                     }
-
-                    chatHistory.getChatHistories().get(competencyIndex).add(InterviewChatDTO.builder().question(response2.getBody().getResponse()).build());
-                    jobService.save(jobApplication);
-                    return new InterviewResponseDTO(InterviewStatus.ON_GOING, response2.getBody().getResponse());
                 }
+            } else {
+                throw new RuntimeException("Failed to get response body");
             }
-            
-
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
         }
@@ -113,34 +131,45 @@ public class InterviewService {
 
     public InterviewResponseDTO start(UUID jobApplicationId, String username) {
         JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
-        if (jobApplication.getUser().getUsername().equals(username) && jobApplication.getStatus().equals(JobApplicationStatus.AWAITING_INTERVIEW)) {
+        if (jobApplication.getUser().getUsername().equals(username)
+                && jobApplication.getStatus().equals(JobApplicationStatus.AWAITING_INTERVIEW)) {
             InterviewChatHistoryDTO chatHistoryDTO = jobApplication.getInterviewChatHistory();
 
             // TODO : Request for the first question
             List<InterviewChatDTO> chat = new ArrayList<>();
-            GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(chatHistoryDTO.getCompetencies().get(chatHistoryDTO.getCompetencyIndex()), chat);
-            ResponseEntity<GenerateQuestionResponseDTO> response = restTemplate.postForEntity(EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO, GenerateQuestionResponseDTO.class);
+            GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(
+                    chatHistoryDTO.getCompetencies().get(chatHistoryDTO.getCompetencyIndex()), chat);
+            ResponseEntity<GenerateQuestionResponseDTO> response = restTemplate.postForEntity(
+                    EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO,
+                    GenerateQuestionResponseDTO.class);
 
-            if(!response.getStatusCode().is2xxSuccessful()){
+            if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Failed to start interview");
             }
 
-            chat.add(InterviewChatDTO.builder().question(response.getBody().getResponse()).build());
-            chatHistoryDTO.getChatHistories().add(chat);
-            jobApplication.setStatus(JobApplicationStatus.INTERVIEW);
-            jobService.save(jobApplication);
-            return new InterviewResponseDTO(InterviewStatus.ON_GOING, response.getBody().getResponse());  
+            GenerateQuestionResponseDTO responseBody = response.getBody();
+
+            if (responseBody == null) {
+                throw new RuntimeException("Failed to get response body");
+            } else{
+                chat.add(InterviewChatDTO.builder().question(responseBody.getResponse()).build());
+                chatHistoryDTO.getChatHistories().add(chat);
+                jobApplication.setStatus(JobApplicationStatus.INTERVIEW);
+                jobService.save(jobApplication);
+                return new InterviewResponseDTO(InterviewStatus.ON_GOING, responseBody.getResponse());
+            }
+
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
         }
 
     }
-    
+
     @RolesAllowed("ADMIN")
     public void score(UUID jobApplicationId, Float score) {
         JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
         jobApplication.setInterviewScore(score);
         jobService.save(jobApplication);
     }
-            
+
 }
