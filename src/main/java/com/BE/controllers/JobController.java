@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.dto.job.JobResultDTO;
@@ -40,6 +41,28 @@ public class JobController {
 
     @GetMapping("/all")
     public ResponseEntity<Map<String, List<JobResultDTO>>> getAllJobs() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<JobResultDTO> jobs = jobService.findAllOpenJobs(username);
+        Map<String, List<JobResultDTO>> body = new HashMap<>();
+        body.put("data", jobs);
+
+        return ResponseEntity.ok(body);
+    }
+
+    @GetMapping("/all/get")
+    public ResponseEntity<Map<String, List<JobResultDTO>>> getAllJobsGet(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String major,
+            @RequestParam(required = false) String skill,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String salary,
+            @RequestParam(required = false) String experience,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String recruiter,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String page,
+            @RequestParam(required = false) String size) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobResultDTO> jobs = jobService.findAllOpenJobs(username);
         Map<String, List<JobResultDTO>> body = new HashMap<>();
@@ -77,6 +100,16 @@ public class JobController {
         PostJobResponseDTO body = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(),
                 postJobRequestDTO.getMajors(), postJobRequestDTO.getSkills(), username);
         return ResponseEntity.ok().body(body);
+    }
+
+    @GetMapping("/applications")
+    public ResponseEntity<Map<String, List<JobApplicationResultDTO>>> getApplications() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<JobApplicationResultDTO> jobApplications = jobService.findApplications(username);
+        Map<String, List<JobApplicationResultDTO>> body = new HashMap<>();
+        body.put("data", jobApplications);
+
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("{jobId}/applications")
