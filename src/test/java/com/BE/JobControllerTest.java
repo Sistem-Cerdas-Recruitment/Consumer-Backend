@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.BE.constants.JobApplicationStatus;
+import com.BE.constants.JobStatus;
 import com.BE.controllers.JobController;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.PostJobRequestDTO;
@@ -30,6 +32,8 @@ import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
 import com.BE.dto.job.application.JobApplicationRequestDTO;
 import com.BE.dto.job.application.JobApplicationResultDTO;
+import com.BE.dto.job.application.JobApplicationStatusRequestDTO;
+import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.services.job.JobService;
 
 import lombok.extern.log4j.Log4j2;
@@ -62,9 +66,9 @@ class JobControllerTest {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null,
-                UUID.randomUUID(), "User 1", false));
+                2, 1, 0, UUID.randomUUID(), "User 1", false, null, null, null));
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
-                UUID.randomUUID(), "User 2", false));
+                1, 1, 0, UUID.randomUUID(), "User 2", false, null, null, null));
         when(jobService.findAllOpenJobs("username")).thenReturn(jobs);
 
         // Act
@@ -84,10 +88,10 @@ class JobControllerTest {
     void testGetPostedJobs() {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null,
-                UUID.randomUUID(), "User 1", false));
+        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), JobStatus.OPEN,
+                1, 1, 1, UUID.randomUUID(), "User 1", false, null, null, null));
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
-                UUID.randomUUID(), "User 2", false));
+                2, 2, 2, UUID.randomUUID(), "User 2", false, null, null, null));
         when(jobService.findAllByUser("username")).thenReturn(jobs);
 
         // Act
@@ -121,7 +125,7 @@ class JobControllerTest {
         // Arrange
         UUID jobId = UUID.randomUUID();
         JobResultDTO job = new JobResultDTO(jobId, "Job 1", "Description 1", List.of(), List.of(), null,
-                UUID.randomUUID(), "User 1", false);
+                1, 1, 1, UUID.randomUUID(), "User 1", false, null, null, null);
         when(jobService.findJob(jobId)).thenReturn(job);
 
         // Act
@@ -230,4 +234,26 @@ class JobControllerTest {
         assertEquals(jobApplication, responseBody);
         verify(jobService, times(1)).getRecruiterJobApplication(applicationId, "username");
     }
+
+    @Test
+    void testUpdateApplicationStatus() {
+        // Arrange
+        UUID jobApplicationId = UUID.randomUUID();
+        boolean isAccepted = true;
+        JobApplicationStatusRequestDTO request = new JobApplicationStatusRequestDTO(jobApplicationId, isAccepted);
+        JobApplicationStatusResponseDTO expectedResponse = new JobApplicationStatusResponseDTO(JobApplicationStatus.ACCEPTED);
+        when(jobService.updateApplicationStatus(jobApplicationId, isAccepted, "username")).thenReturn(expectedResponse);
+
+        // Act
+        ResponseEntity<JobApplicationStatusResponseDTO> response = jobController.updateApplicationStatus(request);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        JobApplicationStatusResponseDTO responseBody = response.getBody();
+        assertEquals(expectedResponse, responseBody);
+        verify(jobService, times(1)).updateApplicationStatus(jobApplicationId, isAccepted, "username");
+    }
 }
+
+
+    
