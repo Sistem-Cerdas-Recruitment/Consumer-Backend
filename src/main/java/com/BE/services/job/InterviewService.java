@@ -193,6 +193,7 @@ public class InterviewService {
     @RolesAllowed("ADMIN")
     public void score(UUID jobApplicationId, Float score) {
         JobApplication jobApplication = jobService.getJobApplication(jobApplicationId);
+        jobApplication.getJob().setInterviewed(jobApplication.getJob().getInterviewed() + 1);
         jobApplication.setInterviewScore(score);
         jobService.save(jobApplication);
     }

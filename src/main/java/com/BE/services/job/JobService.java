@@ -24,6 +24,7 @@ import com.BE.dto.antiCheat.EvaluationDTO;
 import com.BE.dto.interview.InterviewChatDTO;
 import com.BE.dto.interview.InterviewChatHistoryDTO;
 import com.BE.dto.job.JobResultDTO;
+import com.BE.dto.job.JobStatusResponseDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
 import com.BE.dto.job.application.JobApplicationResultDTO;
@@ -38,7 +39,6 @@ import com.BE.entities.User;
 import com.BE.repositories.JobApplicationRepository;
 import com.BE.repositories.JobRepository;
 import com.BE.repositories.projections.JobApplicationProjection.JobApplicationUserJobProjection;
-import com.BE.repositories.projections.JobProjection;
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.user.UserService;
 
@@ -75,13 +75,19 @@ public class JobService {
                 .skills(job.getSkills())
                 .userId(job.getUser().getId())
                 .name(job.getUser().getName())
+                .applicants(job.getApplicants())
+                .offeredInterview(job.getOfferedInterview())
+                .interviewed(job.getInterviewed())
+                .createdAt(job.getCreatedAt())
+                .updatedAt(job.getUpdatedAt())
+                .closedAt(job.getClosedAt())
                 .build();
         return jobResponseDTO;
     }
 
     public List<JobResultDTO> findAllOpenJobs(String username) {
         User user = userService.getUserByEmail(username);
-        List<JobProjection> jobs = jobRepository.findAllByStatus(JobStatus.OPEN,
+        List<Job> jobs = jobRepository.findAllByStatus(JobStatus.OPEN,
                 PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "updatedAt")));
         Map<UUID, JobApplicationUserJobProjection> jobApplications = jobApplicationRepository.findAllByUser(user)
                 .stream()
@@ -94,6 +100,8 @@ public class JobService {
                     .status(job.getStatus())
                     .userId(job.getUser().getId())
                     .name(job.getUser().getName())
+                    .createdAt(job.getCreatedAt())
+                    .updatedAt(job.getUpdatedAt())
                     .applied(jobApplications.containsKey(job.getId()))
                     .build();
             return jobResponseDTO;
@@ -103,7 +111,7 @@ public class JobService {
 
     public List<JobResultDTO> findAllByUser(String username) {
         User user = userService.getUserByEmail(username);
-        List<JobProjection> jobs = jobRepository.findAllByUser(user,
+        List<Job> jobs = jobRepository.findAllByUser(user,
                 PageRequest.of(0, 10000, Sort.by(Sort.Direction.DESC, "updatedAt")));
         List<JobResultDTO> response = jobs.stream().map(job -> {
             JobResultDTO jobResponseDTO = JobResultDTO.builder()
@@ -113,10 +121,35 @@ public class JobService {
                     .description(job.getDescription())
                     .userId(job.getUser().getId())
                     .name(job.getUser().getName())
+                    .applicants(job.getApplicants())
+                    .offeredInterview(job.getOfferedInterview())
+                    .interviewed(job.getInterviewed())
+                    .createdAt(job.getCreatedAt())
+                    .updatedAt(job.getUpdatedAt())
+                    .closedAt(job.getClosedAt())
                     .build();
             return jobResponseDTO;
         }).collect(Collectors.toList());
         return response;
+    }
+
+    public JobStatusResponseDTO updateJobStatus(UUID JobId, Boolean status, String username) {
+        User user = userService.getUserByEmail(username);
+        Job job = jobRepository.findById(JobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
+
+        if (job.getUser().getId().equals(user.getId())) {
+            if (status) {
+                job.setStatus(JobStatus.OPEN);
+            } else {
+                job.setStatus(JobStatus.CLOSED);
+                job.setClosedAt(job.getUpdatedAt());
+            }
+            jobRepository.save(job);
+            JobStatusResponseDTO jobStatusResponseDTO = new JobStatusResponseDTO("Success", job.getStatus());
+            return jobStatusResponseDTO;
+        } else {
+            throw new AccessDeniedException("You are not authorized to access this resource");
+        }
     }
 
     public List<JobApplicationResultDTO> findApplications(UUID jobId, String username) {
@@ -245,10 +278,22 @@ public class JobService {
         JobApplication jobApplication = getJobApplication(applicationId);
         if (jobApplication.getJob().getUser().getEmail().equals(username)) {
             if (jobApplication.getStatus().equals(JobApplicationStatus.PENDING)) {
-                jobApplication
-                        .setStatus(status ? JobApplicationStatus.AWAITING_INTERVIEW : JobApplicationStatus.REJECTED);
+                if(status){
+                    jobApplication
+                            .setStatus(JobApplicationStatus.AWAITING_INTERVIEW);
+                    jobApplication.getJob().setOfferedInterview(jobApplication.getJob().getOfferedInterview() + 1);
+                } else {
+                    jobApplication
+                            .setStatus(JobApplicationStatus.REJECTED);
+                }
             } else if (jobApplication.getStatus().equals(JobApplicationStatus.EVALUATED)) {
-                jobApplication.setStatus(status ? JobApplicationStatus.ACCEPTED : JobApplicationStatus.REJECTED);
+                if(status){
+                    jobApplication
+                            .setStatus(JobApplicationStatus.ACCEPTED);
+                } else {
+                    jobApplication
+                            .setStatus(JobApplicationStatus.REJECTED);
+                }
             } else {
                 throw new IllegalArgumentException("Application status cannot be updated");
             }
@@ -307,6 +352,8 @@ public class JobService {
                 throw new IllegalArgumentException("Failed to get matching");
             }
 
+            job.setApplicants(job.getApplicants() + 1);
+            jobRepository.save(job);
             jobApplicationRepository.save(jobApplication);
 
             return JobApplicationDTO.builder()

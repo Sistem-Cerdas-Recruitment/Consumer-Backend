@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BE.dto.job.JobResultDTO;
+import com.BE.dto.job.JobStatusRequestDTO;
+import com.BE.dto.job.JobStatusResponseDTO;
 import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
@@ -90,6 +92,14 @@ public class JobController {
     @GetMapping("/{jobId}")
     public ResponseEntity<JobResultDTO> getJob(@PathVariable UUID jobId) {
         JobResultDTO job = jobService.findJob(jobId);
+        return ResponseEntity.ok(job);
+    }
+
+    @PatchMapping("/status")
+    @RolesAllowed("RECRUITER")
+    public ResponseEntity<JobStatusResponseDTO> updateJobStatus(@RequestBody JobStatusRequestDTO request) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        JobStatusResponseDTO job = jobService.updateJobStatus(request.getJobId(), request.getStatus(), username);
         return ResponseEntity.ok(job);
     }
 

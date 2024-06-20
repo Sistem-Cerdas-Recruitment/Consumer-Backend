@@ -1,5 +1,6 @@
 package com.BE.dto.job;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +22,13 @@ public class JobResultDTO {
     private List<String> majors;
     private List<String> skills;
     private JobStatus status;
+    private Integer applicants;
+    private Integer offeredInterview;
+    private Integer interviewed;
     private UUID userId;
     private String name;
     private Boolean applied;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime closedAt;
 }
