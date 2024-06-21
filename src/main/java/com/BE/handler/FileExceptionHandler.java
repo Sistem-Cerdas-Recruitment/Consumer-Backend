@@ -18,7 +18,7 @@ public class FileExceptionHandler {
     @ExceptionHandler(S3Exception.class)
     public ResponseEntity<Object> handleS3Exception(S3Exception e) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", "Failed to upload file");
+        body.put("error", "Failed to upload file: " + e.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

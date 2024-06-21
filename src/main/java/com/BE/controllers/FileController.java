@@ -41,22 +41,18 @@ public class FileController {
     private CurriculumVitaeService curriculumVitaeService;
 
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file) {
 
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        try {
-            String response = bucketService.put(file, username);
-            return response;
-        } catch (Exception e) {
-            return "Failed to upload file: " + e;
-        }
+        String response = bucketService.put(file, username);
+        return ResponseEntity.ok(response);
 
     }
 
     @PostMapping("/getFileUrl")
-    public String getFileUrl(@RequestBody String fileName) {
-        return bucketService.createPresignedGetUrl(fileName);
+    public ResponseEntity<Object> getFileUrl(@RequestBody String fileName) {
+        return ResponseEntity.ok(bucketService.createPresignedGetUrl(fileName));
     }
 
     // @SuppressWarnings("null")
@@ -65,11 +61,13 @@ public class FileController {
 
         String originalFileName = file.getOriginalFilename();
 
-        if(file.getOriginalFilename() == null){
-            throw new InvalidFileNameException(file.getOriginalFilename(), "Invalid file format. Only PDF files are allowed.");
-        } else if (originalFileName != null){
-            if(!originalFileName.endsWith(".pdf")){
-                throw new InvalidFileNameException(file.getOriginalFilename(), "Invalid file format. Only PDF files are allowed.");
+        if (file.getOriginalFilename() == null) {
+            throw new InvalidFileNameException(file.getOriginalFilename(),
+                    "Invalid file format. Only PDF files are allowed.");
+        } else if (originalFileName != null) {
+            if (!originalFileName.endsWith(".pdf")) {
+                throw new InvalidFileNameException(file.getOriginalFilename(),
+                        "Invalid file format. Only PDF files are allowed.");
             }
         }
 
@@ -87,7 +85,7 @@ public class FileController {
     public ResponseEntity<Object> setDefaultCV(@RequestBody UUID id) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CurriculumVitae cv = curriculumVitaeService.setDefault(id, username);
-        FileResponseDTO body =  FileResponseDTO.builder()
+        FileResponseDTO body = FileResponseDTO.builder()
                 .id(cv.getId())
                 .fileName(cv.getOriginalFileName())
                 .uploadDate(cv.getCreatedAt())

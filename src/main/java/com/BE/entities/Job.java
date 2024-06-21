@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.BE.constants.JobStatus;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Job extends BaseEntity {
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private JobStatus status;
     @Builder.Default
