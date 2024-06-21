@@ -22,6 +22,7 @@ public class JobResultDTO {
     private List<String> majors;
     private List<String> skills;
     private JobStatus status;
+    private Integer minYearsOfExperience;
     private Integer applicants;
     private Integer offeredInterview;
     private Integer interviewed;

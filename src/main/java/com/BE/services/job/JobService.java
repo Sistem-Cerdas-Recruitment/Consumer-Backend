@@ -71,6 +71,7 @@ public class JobService {
                 .title(job.getTitle())
                 .description(job.getDescription())
                 .status(job.getStatus())
+                .minYearsOfExperience(job.getYearsOfExperience())
                 .majors(job.getMajors())
                 .skills(job.getSkills())
                 .userId(job.getUser().getId())
