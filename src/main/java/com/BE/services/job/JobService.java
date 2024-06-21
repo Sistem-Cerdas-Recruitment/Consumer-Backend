@@ -101,6 +101,7 @@ public class JobService {
                     .status(job.getStatus())
                     .userId(job.getUser().getId())
                     .company(job.getUser().getName())
+                    .location(job.getLocation())
                     .createdAt(job.getCreatedAt())
                     .updatedAt(job.getUpdatedAt())
                     .applied(jobApplications.containsKey(job.getId()))
