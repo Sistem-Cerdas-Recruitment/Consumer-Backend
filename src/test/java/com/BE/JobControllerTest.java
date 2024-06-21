@@ -66,9 +66,9 @@ class JobControllerTest {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null,
-                2, 1, 0, UUID.randomUUID(), "User 1", false, null, null, null));
+                2, 1, 0, UUID.randomUUID(), "User 1", null, false, null, null, null));
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
-                1, 1, 0, UUID.randomUUID(), "User 2", false, null, null, null));
+                1, 1, 0, UUID.randomUUID(), "User 2", null, false, null, null, null));
         when(jobService.findAllOpenJobs("username")).thenReturn(jobs);
 
         // Act
@@ -89,9 +89,9 @@ class JobControllerTest {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), JobStatus.OPEN,
-                1, 1, 1, UUID.randomUUID(), "User 1", false, null, null, null));
+                1, 1, 1, UUID.randomUUID(), "User 1", null, false, null, null, null));
         jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
-                2, 2, 2, UUID.randomUUID(), "User 2", false, null, null, null));
+                2, 2, 2, UUID.randomUUID(), "User 2", null, false, null, null, null));
         when(jobService.findAllByUser("username")).thenReturn(jobs);
 
         // Act
@@ -125,7 +125,7 @@ class JobControllerTest {
         // Arrange
         UUID jobId = UUID.randomUUID();
         JobResultDTO job = new JobResultDTO(jobId, "Job 1", "Description 1", List.of(), List.of(), null,
-                1, 1, 1, UUID.randomUUID(), "User 1", false, null, null, null);
+                1, 1, 1, UUID.randomUUID(), "User 1", null, false, null, null, null);
         when(jobService.findJob(jobId)).thenReturn(job);
 
         // Act

@@ -15,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = null;
         final String userEmail;
         List<SimpleGrantedAuthority> roles;
-        final Cookie[] cookies = request.getCookies();
         final String authHeader = request.getHeader("Authorization");
         final String requestXApiKey = request.getHeader("x-api-key");
 

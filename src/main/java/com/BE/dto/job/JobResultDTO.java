@@ -26,7 +26,8 @@ public class JobResultDTO {
     private Integer offeredInterview;
     private Integer interviewed;
     private UUID userId;
-    private String name;
+    private String company;
+    private String location;
     private Boolean applied;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
