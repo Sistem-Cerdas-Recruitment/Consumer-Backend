@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -51,47 +50,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authenticationToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        } 
-
-        if(cookies != null){
-            for (Cookie c : cookies) {
-                if (c.getName().equals("biskuat")) {
-                    jwt = c.getValue();
-                    break;
-                }
-            }
         }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
         }
 
-        if (jwt != null) {
-            // jwt = authorizationHeader.substring(7);
+        if (jwt != null && !jwt.equals("")) {
             try {
                 userEmail = jwtService.extractUsername(jwt);
                 roles = jwtService.extractRoles(jwt);
             } catch (Exception e) {
-                response
-                        .addHeader("Set-Cookie", ResponseCookie.from("biskuat", "")
-                                .httpOnly(true)
-                                .path("/")
-                                .maxAge(0)
-                                .build().toString());
-                filterChain.doFilter(request, response);
+                logger.error("Error parsing JWT: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                if (jwtService.isTokenValid(jwt, userEmail)) {
-                    // set authentication
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            userEmail, null, roles);
-                    authenticationToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                }
+                // set authentication
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userEmail, null, roles);
+                authenticationToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
             filterChain.doFilter(request, response);
         } else {
