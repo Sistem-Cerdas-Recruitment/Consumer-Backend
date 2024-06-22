@@ -1,6 +1,6 @@
 package com.BE.dto.job;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +30,7 @@ public class JobResultDTO {
     private String company;
     private String location;
     private Boolean applied;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime closedAt;
+    private Date createdAt;
+    private Date updatedAt;
+    private Date closedAt;
 }

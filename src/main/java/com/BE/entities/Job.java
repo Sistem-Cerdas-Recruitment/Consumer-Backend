@@ -1,6 +1,6 @@
 package com.BE.entities;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import com.BE.constants.JobStatus;
@@ -36,7 +36,7 @@ public class Job extends BaseEntity {
     private String location;
     private List<String> majors;
     private List<String> skills;
-    private LocalDateTime closedAt;
+    private Date closedAt;
 
     @ManyToOne
     private User user;
