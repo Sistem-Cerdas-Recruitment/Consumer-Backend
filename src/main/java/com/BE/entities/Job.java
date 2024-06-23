@@ -32,7 +32,8 @@ public class Job extends BaseEntity {
     private Integer offeredInterview = 0;
     @Builder.Default
     private Integer interviewed = 0;
-    private Integer yearsOfExperience;
+    @Builder.Default
+    private Integer yearsOfExperience = 0;
     private String location;
     private List<String> majors;
     private List<String> skills;
