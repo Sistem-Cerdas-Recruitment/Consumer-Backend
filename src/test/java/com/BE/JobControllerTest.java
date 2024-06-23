@@ -126,7 +126,7 @@ class JobControllerTest {
         UUID jobId = UUID.randomUUID();
         JobResultDTO job = new JobResultDTO(jobId, "Job 1", "Description 1", List.of(), List.of(), null,
                 1, 1, 1, null, UUID.randomUUID(), "User 1", null, false, null, null, null);
-        when(jobService.findJob(jobId)).thenReturn(job);
+        when(jobService.findJob(jobId, "username")).thenReturn(job);
 
         // Act
         ResponseEntity<JobResultDTO> response = jobController.getJob(jobId);
@@ -138,7 +138,7 @@ class JobControllerTest {
             throw new AssertionError("Response body is null");
         }
         assertEquals(job, responseBody);
-        verify(jobService, times(1)).findJob(jobId);
+        verify(jobService, times(1)).findJob(jobId, "username");
     }
 
     @Test

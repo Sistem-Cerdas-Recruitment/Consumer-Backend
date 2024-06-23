@@ -64,8 +64,11 @@ public class JobService {
         return jobRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Job not found"));
     }
 
-    public JobResultDTO findJob(UUID id) {
+    public JobResultDTO findJob(UUID id, String username) {
         Job job = jobRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Job not found"));
+        User user = userService.getUserByEmail(username);
+        Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
+                user);
         JobResultDTO jobResponseDTO = JobResultDTO.builder()
                 .id(job.getId())
                 .title(job.getTitle())
@@ -83,6 +86,7 @@ public class JobService {
                 .createdAt(job.getCreatedAt())
                 .updatedAt(job.getUpdatedAt())
                 .closedAt(job.getClosedAt())
+                .applied(existingJobApplication.isPresent())
                 .build();
         return jobResponseDTO;
     }

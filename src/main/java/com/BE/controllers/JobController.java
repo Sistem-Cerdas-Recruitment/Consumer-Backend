@@ -91,7 +91,8 @@ public class JobController {
 
     @GetMapping("/{jobId}")
     public ResponseEntity<JobResultDTO> getJob(@PathVariable UUID jobId) {
-        JobResultDTO job = jobService.findJob(jobId);
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        JobResultDTO job = jobService.findJob(jobId, username);
         return ResponseEntity.ok(job);
     }
 
