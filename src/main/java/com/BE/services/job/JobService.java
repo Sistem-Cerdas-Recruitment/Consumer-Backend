@@ -163,9 +163,11 @@ public class JobService {
                     .map(jobApplication -> {
                         JobApplicationResultDTO jobApplicationResultDTO = JobApplicationResultDTO.builder()
                                 .id(jobApplication.getId())
-                                .jobId(jobApplication.getJobId())
+                                .jobId(jobApplication.getJob().getId())
                                 .jobTitle(jobApplication.getJob().getTitle())
                                 .recruiterId(jobApplication.getJob().getUser().getId())
+                                .relevanceScore(jobApplication.getRelevanceScore())
+                                .isRelevant(jobApplication.getIsRelevant())
                                 .recruiterName(jobApplication.getJob().getUser().getName())
                                 .status(jobApplication.getStatus())
                                 .userId(jobApplication.getUser().getId())
@@ -213,7 +215,7 @@ public class JobService {
                 .map(jobApplication -> {
                     JobApplicationResultDTO jobApplicationResultDTO = JobApplicationResultDTO.builder()
                             .id(jobApplication.getId())
-                            .jobId(jobApplication.getJobId())
+                            .jobId(jobApplication.getJob().getId())
                             .jobTitle(jobApplication.getJob().getTitle())
                             .recruiterId(jobApplication.getJob().getUser().getId())
                             .recruiterName(jobApplication.getJob().getUser().getName())

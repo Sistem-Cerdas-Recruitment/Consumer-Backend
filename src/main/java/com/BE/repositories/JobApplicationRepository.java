@@ -19,5 +19,5 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     List<JobApplicationUserJobProjection> findAllByUser(User user);
 
-    List<JobApplicationUserJobProjection> findByJob(Job job);
+    List<JobApplication> findByJob(Job job);
 }

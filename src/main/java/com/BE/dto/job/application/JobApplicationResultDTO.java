@@ -17,5 +17,7 @@ public class JobApplicationResultDTO {
     private UUID recruiterId;
     private String recruiterName;
     private UUID userId;
+    private Double relevanceScore;
+    private Boolean isRelevant;
     private String userName;
 }
