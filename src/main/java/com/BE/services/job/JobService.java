@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -42,7 +43,10 @@ import com.BE.repositories.projections.JobApplicationProjection.JobApplicationUs
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.user.UserService;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 public class JobService {
 
     @Autowired
@@ -266,6 +270,7 @@ public class JobService {
                     .status(jobApplication.getStatus())
                     .relevanceScore(jobApplication.getRelevanceScore())
                     .isRelevant(jobApplication.getIsRelevant())
+                    .interviewScore(jobApplication.getInterviewScore())
                     .experience(jobApplication.getExperience())
                     .jobId(jobApplication.getJob().getId())
                     .jobTitle(jobApplication.getJob().getTitle())
@@ -336,7 +341,15 @@ public class JobService {
                     .cv(cv)
                     .build();
 
-            jobApplicationRepository.save(jobApplication);
+            // jobApplicationRepository.save(jobApplication);
+
+            JSONParser parser = new JSONParser(job.getDescription());
+            Map<String, Object> jobDescription;
+            try {
+                jobDescription = parser.parseObject();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Failed to parse job description");
+            }
 
             // getMatching
             MatchingRequestDTO matchingRequestDTO = new MatchingRequestDTO(
@@ -344,14 +357,19 @@ public class JobService {
                     JobMatchingDTO.builder()
                             .minYoE(job.getYearsOfExperience())
                             .role(job.getTitle())
-                            .jobDesc(job.getDescription())
+                            .jobDesc(jobDescription.get("description").toString())
                             .majors(job.getMajors())
                             .skills(job.getSkills())
                             .build());
+
+            log.info(matchingRequestDTO);
+
             ResponseEntity<MatchingResponseDTO> response = restTemplate.postForEntity(
                     EndpointConstants.MATCHING_SERVICE + "/classify",
                     matchingRequestDTO, MatchingResponseDTO.class);
 
+            log.info(response.getStatusCode());
+            
             MatchingResponseDTO responseBody = response.getBody();
 
             if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {

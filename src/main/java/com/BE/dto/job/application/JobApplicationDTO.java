@@ -14,6 +14,7 @@ public class JobApplicationDTO {
     private JobApplicationStatus status;
     private Object experience;
     private Double relevanceScore;
+    private Float interviewScore;
     private Boolean isRelevant;
     private UUID jobId;
     private String jobTitle;

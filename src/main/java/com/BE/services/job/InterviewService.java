@@ -79,8 +79,8 @@ public class InterviewService {
             interviewChatLogDTO.setBackspaceCount(chatLog.getBackspaceCount());
             interviewChatLogDTO.setLetterClickCounts(chatLog.getLetterClickCounts());
 
+            // TODO: Only save when question is generated
             jobService.save(jobApplication);
-            // TODO: Request for the next question
             GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(
                     chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()),
                     chatHistory.getChatHistories().get(competencyIndex));
