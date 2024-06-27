@@ -79,8 +79,6 @@ public class InterviewService {
             interviewChatLogDTO.setBackspaceCount(chatLog.getBackspaceCount());
             interviewChatLogDTO.setLetterClickCounts(chatLog.getLetterClickCounts());
 
-            // TODO: Only save when question is generated
-            jobService.save(jobApplication);
             GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(
                     chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()),
                     chatHistory.getChatHistories().get(competencyIndex));
@@ -106,7 +104,6 @@ public class InterviewService {
                     if (chatHistory.getCompetencyIndex() == chatHistory.getCompetencies().size()) {
                         jobApplication.setStatus(JobApplicationStatus.AWAITING_EVALUATION);
 
-                        // TODO: Evaluate the interview
                         AntiCheatEvaluationDTO antiCheatEvaluationDTO = AntiCheatEvaluationDTO.builder()
                                 .jobApplicationId(jobApplicationId)
                                 .data(chatHistory.getChatHistories().stream().flatMap(List::stream).toList())
@@ -160,7 +157,6 @@ public class InterviewService {
                 && jobApplication.getStatus().equals(JobApplicationStatus.AWAITING_INTERVIEW)) {
             InterviewChatHistoryDTO chatHistoryDTO = jobApplication.getInterviewChatHistory();
 
-            // TODO : Request for the first question
             List<InterviewChatDTO> chat = new ArrayList<>();
             GenerateQuestionRequestDTO generateQuestionRequestDTO = new GenerateQuestionRequestDTO(
                     chatHistoryDTO.getCompetencies().get(chatHistoryDTO.getCompetencyIndex()), chat);
