@@ -56,7 +56,8 @@ class JobControllerTest {
         jobController.jobService = jobService;
         SecurityContextHolder.setContext(securityContext);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                "username", null, List.of(new SimpleGrantedAuthority("ROLE_RECRUITER"), new SimpleGrantedAuthority("ROLE_CANDIDATE")));
+                "username", null,
+                List.of(new SimpleGrantedAuthority("ROLE_RECRUITER"), new SimpleGrantedAuthority("ROLE_CANDIDATE")));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         when(securityContext.getAuthentication()).thenReturn(authenticationToken);
     }
@@ -65,10 +66,52 @@ class JobControllerTest {
     void testGetAllJobs() {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), null,
-                2, 1, 0, null, UUID.randomUUID(), "User 1", null, false, null, null, null));
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
-                1, 1, 0, null, UUID.randomUUID(), "User 2", null, false, null, null, null));
+        jobs.add(
+                JobResultDTO.builder()
+                        .id(UUID.randomUUID())
+                        .title("Job 1")
+                        .description("Description 1")
+                        .status(JobStatus.OPEN)
+                        .applicants(1)
+                        .offeredInterview(1)
+                        .interviewed(1)
+                        .minYearsOfExperience(1)
+                        .location("Location 1")
+                        .salary("Salary 1")
+                        .advantages(List.of("Advantage 1"))
+                        .additionalInfo("Additional info 1")
+                        .mode("Mode 1")
+                        .type("Type 1")
+                        .experienceLevel("Experience level 1")
+                        .responsibilities(List.of("Responsibility 1"))
+                        .requirements(List.of("Requirement 1"))
+                        .majors(List.of("Major 1"))
+                        .skills(List.of("Skill 1"))
+                        .closedAt(null)
+                        .build());
+        jobs.add(
+                JobResultDTO.builder()
+                        .id(UUID.randomUUID())
+                        .title("Job 2")
+                        .description("Description 2")
+                        .status(null)
+                        .applicants(2)
+                        .offeredInterview(2)
+                        .interviewed(2)
+                        .minYearsOfExperience(2)
+                        .location("Location 2")
+                        .salary("Salary 2")
+                        .advantages(List.of("Advantage 2"))
+                        .additionalInfo("Additional info 2")
+                        .mode("Mode 2")
+                        .type("Type 2")
+                        .experienceLevel("Experience level 2")
+                        .responsibilities(List.of("Responsibility 2"))
+                        .requirements(List.of("Requirement 2"))
+                        .majors(List.of("Major 2"))
+                        .skills(List.of("Skill 2"))
+                        .closedAt(null)
+                        .build());
         when(jobService.findAllOpenJobs("username")).thenReturn(jobs);
 
         // Act
@@ -88,10 +131,52 @@ class JobControllerTest {
     void testGetPostedJobs() {
         // Arrange
         List<JobResultDTO> jobs = new ArrayList<>();
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 1", "Description 1", List.of(), List.of(), JobStatus.OPEN,
-                1, 1, 1, null, UUID.randomUUID(), "User 1", null, false, null, null, null));
-        jobs.add(new JobResultDTO(UUID.randomUUID(), "Job 2", "Description 2", List.of(), List.of(), null,
-                2, 2, 2, null, UUID.randomUUID(), "User 2", null, false, null, null, null));
+        jobs.add(
+                JobResultDTO.builder()
+                        .id(UUID.randomUUID())
+                        .title("Job 1")
+                        .description("Description 1")
+                        .status(JobStatus.OPEN)
+                        .applicants(1)
+                        .offeredInterview(1)
+                        .interviewed(1)
+                        .minYearsOfExperience(1)
+                        .location("Location 1")
+                        .salary("Salary 1")
+                        .advantages(List.of("Advantage 1"))
+                        .additionalInfo("Additional info 1")
+                        .mode("Mode 1")
+                        .type("Type 1")
+                        .experienceLevel("Experience level 1")
+                        .responsibilities(List.of("Responsibility 1"))
+                        .requirements(List.of("Requirement 1"))
+                        .majors(List.of("Major 1"))
+                        .skills(List.of("Skill 1"))
+                        .closedAt(null)
+                        .build());
+        jobs.add(
+                JobResultDTO.builder()
+                        .id(UUID.randomUUID())
+                        .title("Job 2")
+                        .description("Description 2")
+                        .status(null)
+                        .applicants(2)
+                        .offeredInterview(2)
+                        .interviewed(2)
+                        .minYearsOfExperience(2)
+                        .location("Location 2")
+                        .salary("Salary 2")
+                        .advantages(List.of("Advantage 2"))
+                        .additionalInfo("Additional info 2")
+                        .mode("Mode 2")
+                        .type("Type 2")
+                        .experienceLevel("Experience level 2")
+                        .responsibilities(List.of("Responsibility 2"))
+                        .requirements(List.of("Requirement 2"))
+                        .majors(List.of("Major 2"))
+                        .skills(List.of("Skill 2"))
+                        .closedAt(null)
+                        .build());
         when(jobService.findAllByUser("username")).thenReturn(jobs);
 
         // Act
@@ -124,8 +209,28 @@ class JobControllerTest {
     void testGetJob() {
         // Arrange
         UUID jobId = UUID.randomUUID();
-        JobResultDTO job = new JobResultDTO(jobId, "Job 1", "Description 1", List.of(), List.of(), null,
-                1, 1, 1, null, UUID.randomUUID(), "User 1", null, false, null, null, null);
+        JobResultDTO job = JobResultDTO.builder()
+                .id(jobId)
+                .title("Job 1")
+                .description("Description 1")
+                .status(JobStatus.OPEN)
+                .applicants(1)
+                .offeredInterview(1)
+                .interviewed(1)
+                .minYearsOfExperience(1)
+                .location("Location 1")
+                .salary("Salary 1")
+                .advantages(List.of("Advantage 1"))
+                .additionalInfo("Additional info 1")
+                .mode("Mode 1")
+                .type("Type 1")
+                .experienceLevel("Experience level 1")
+                .responsibilities(List.of("Responsibility 1"))
+                .requirements(List.of("Requirement 1"))
+                .majors(List.of("Major 1"))
+                .skills(List.of("Skill 1"))
+                .closedAt(null)
+                .build();
         when(jobService.findJob(jobId, "username")).thenReturn(job);
 
         // Act
@@ -182,14 +287,16 @@ class JobControllerTest {
     @Test
     void testPostJob() {
         // Arrange
-        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Desc 1", 1, List.of("Comp Sci"), List.of("Java"));
+        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Desc 1", 1, List.of("Comp Sci"),
+                List.of("Java"));
 
         // Act
         ResponseEntity<PostJobResponseDTO> response = jobController.postJob(postJobRequestDTO);
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        verify(jobService, times(1)).createJob(eq("Job 1"), eq("Desc 1"), eq(List.of("Comp Sci")), eq(List.of("Java")), eq("username"));
+        verify(jobService, times(1)).createJob(eq("Job 1"), eq("Desc 1"), eq(List.of("Comp Sci")), eq(List.of("Java")),
+                eq("username"));
     }
 
     @Test
@@ -240,7 +347,8 @@ class JobControllerTest {
         UUID jobApplicationId = UUID.randomUUID();
         boolean isAccepted = true;
         JobApplicationStatusRequestDTO request = new JobApplicationStatusRequestDTO(jobApplicationId, isAccepted);
-        JobApplicationStatusResponseDTO expectedResponse = new JobApplicationStatusResponseDTO(JobApplicationStatus.ACCEPTED);
+        JobApplicationStatusResponseDTO expectedResponse = new JobApplicationStatusResponseDTO(
+                JobApplicationStatus.ACCEPTED);
         when(jobService.updateApplicationStatus(jobApplicationId, isAccepted, "username")).thenReturn(expectedResponse);
 
         // Act
@@ -253,6 +361,3 @@ class JobControllerTest {
         verify(jobService, times(1)).updateApplicationStatus(jobApplicationId, isAccepted, "username");
     }
 }
-
-
-    
