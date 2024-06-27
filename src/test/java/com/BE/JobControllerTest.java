@@ -196,7 +196,7 @@ class JobControllerTest {
     void testApplyForJob() {
         // Arrange
         JobApplicationRequestDTO jobApplicationRequestDTO = new JobApplicationRequestDTO(UUID.randomUUID(),
-                UUID.randomUUID(), null);
+                UUID.randomUUID(), null, null, null, null, null, null, null, null, null);
 
         // Act
         ResponseEntity<JobApplicationDTO> response = jobController.applyForJob(jobApplicationRequestDTO);
@@ -204,8 +204,7 @@ class JobControllerTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        verify(jobService, times(1)).apply(eq(jobApplicationRequestDTO.getJobId()),
-                eq(jobApplicationRequestDTO.getCvId()), eq(null), eq("username"));
+        verify(jobService, times(1)).apply(eq(jobApplicationRequestDTO), eq("username"));
     }
 
     @Test

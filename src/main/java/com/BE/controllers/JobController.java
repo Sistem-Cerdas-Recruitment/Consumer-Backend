@@ -160,7 +160,7 @@ public class JobController {
     @RolesAllowed("CANDIDATE")
     public ResponseEntity<JobApplicationDTO> applyForJob(@RequestBody JobApplicationRequestDTO body) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        JobApplicationDTO jobApplicationDto = jobService.apply(body.getJobId(), body.getCvId(), body.getExperience(), username);
+        JobApplicationDTO jobApplicationDto = jobService.apply(body, username);
         return ResponseEntity.ok().body(jobApplicationDto);
     }
 

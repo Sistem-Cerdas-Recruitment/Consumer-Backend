@@ -28,6 +28,7 @@ import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.JobStatusResponseDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
+import com.BE.dto.job.application.JobApplicationRequestDTO;
 import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.dto.job.matching.JobMatchingDTO;
@@ -84,6 +85,14 @@ public class JobService {
                 .userId(job.getUser().getId())
                 .company(job.getUser().getName())
                 .location(job.getLocation())
+                .salary(job.getSalary())
+                .advantages(job.getAdvantages())
+                .additionalInfo(job.getAdditionalInfo())
+                .mode(job.getMode())
+                .type(job.getType())
+                .experienceLevel(job.getExperienceLevel())
+                .responsibilities(job.getResponsibilities())
+                .requirements(job.getRequirements())
                 .applicants(job.getApplicants())
                 .offeredInterview(job.getOfferedInterview())
                 .interviewed(job.getInterviewed())
@@ -320,12 +329,12 @@ public class JobService {
         }
     }
 
-    public JobApplicationDTO apply(UUID jobId, UUID cvId, Object experience, String username) {
+    public JobApplicationDTO apply(JobApplicationRequestDTO request, String username) {
         User user = userService.getUserByEmail(username);
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> new NoSuchElementException("Job not found"));
+        Job job = jobRepository.findById(request.getJobId()).orElseThrow(() -> new NoSuchElementException("Job not found"));
         Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
                 user);
-        CurriculumVitae cv = curriculumVitaeService.find(cvId, user);
+        CurriculumVitae cv = curriculumVitaeService.find(request.getCvId(), user);
 
         if (existingJobApplication.isEmpty()) {
             JobApplication jobApplication = JobApplication.builder()
@@ -335,7 +344,7 @@ public class JobService {
                             InterviewChatHistoryDTO.builder().competencies(job.getSkills())
                                     .chatHistories(new ArrayList<>())
                                     .build())
-                    .experience(experience)
+                    .experience(request.getExperience())
                     .job(job)
                     .user(user)
                     .cv(cv)
@@ -353,7 +362,7 @@ public class JobService {
 
             // getMatching
             MatchingRequestDTO matchingRequestDTO = new MatchingRequestDTO(
-                    experience,
+                    request.getExperience(),
                     JobMatchingDTO.builder()
                             .minYoE(job.getYearsOfExperience())
                             .role(job.getTitle())
@@ -391,12 +400,12 @@ public class JobService {
                     .recruiterId(jobApplication.getJob().getUser().getId())
                     .relevanceScore(jobApplication.getRelevanceScore())
                     .isRelevant(jobApplication.getIsRelevant())
-                    .experience(experience)
+                    .experience(request.getExperience())
                     .recruiterName(jobApplication.getJob().getUser().getName())
                     .userId(jobApplication.getUser().getId())
                     .userName(jobApplication.getUser().getName())
                     .fileName(jobApplication.getCv().getFileName())
-                    .cvUrl(curriculumVitaeService.get(cvId, username))
+                    .cvUrl(curriculumVitaeService.get(request.getCvId(), username))
                     .build();
         } else if (existingJobApplication.isPresent()) {
             throw new IllegalArgumentException("You have already applied for this job");
