@@ -104,7 +104,7 @@ public class CurriculumVitaeService {
     public CurriculumVitae setDefault(UUID cvId, String username) {
         User user = userService.getUserByEmail(username);
         List<CurriculumVitae> cvs = curriculumVitaeRepository.findAllByUser(user,
-                PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "isDefault", "createdAt")));
+                PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "isDefault", "createdAt")));
         CurriculumVitae curriculumVitae = null;
 
         for (CurriculumVitae cv : cvs) {

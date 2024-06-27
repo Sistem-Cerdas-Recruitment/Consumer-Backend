@@ -82,13 +82,14 @@ public class FileController {
     }
 
     @PatchMapping("/cv/default")
-    public ResponseEntity<Object> setDefaultCV(@RequestBody UUID id) {
+    public ResponseEntity<Object> setDefaultCV(@RequestBody Map<String, UUID> request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurriculumVitae cv = curriculumVitaeService.setDefault(id, username);
+        CurriculumVitae cv = curriculumVitaeService.setDefault(request.get("id"), username);
         FileResponseDTO body = FileResponseDTO.builder()
                 .id(cv.getId())
                 .fileName(cv.getOriginalFileName())
                 .uploadDate(cv.getCreatedAt())
+                .isDefault(cv.isDefault())
                 .build();
         return ResponseEntity.ok(body);
     }
