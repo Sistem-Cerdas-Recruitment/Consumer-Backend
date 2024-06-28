@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.BE.constants.EndpointConstants;
@@ -73,8 +74,15 @@ public class InterviewService {
                 && jobApplication.getStatus().equals(JobApplicationStatus.INTERVIEW)) {
             InterviewChatHistoryDTO chatHistory = jobApplication.getInterviewChatHistory();
             int competencyIndex = chatHistory.getCompetencyIndex();
+            // log.info("Competency Index: {}, last chat history: [{}]", competencyIndex, chatHistory.getChatHistories().get(competencyIndex).size());
             InterviewChatDTO interviewChatLogDTO = chatHistory.getChatHistories().get(competencyIndex)
                     .get(chatHistory.getChatHistories().get(competencyIndex).size() - 1);
+
+            // Check if the question is the same
+            if (!interviewChatLogDTO.getQuestion().equals(chatLog.getQuestion())) {
+                throw new IllegalArgumentException("Question does not match");
+            }
+
             interviewChatLogDTO.setAnswer(chatLog.getAnswer());
             interviewChatLogDTO.setBackspaceCount(chatLog.getBackspaceCount());
             interviewChatLogDTO.setLetterClickCounts(chatLog.getLetterClickCounts());
@@ -87,7 +95,7 @@ public class InterviewService {
                     GenerateQuestionResponseDTO.class);
 
             if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException("Failed to answer interview");
+                throw new RestClientException("Failed to generate next interview question");
             }
             GenerateQuestionResponseDTO generateQuestionResponseDTO = response.getBody();
             if (generateQuestionResponseDTO != null) {
@@ -123,13 +131,13 @@ public class InterviewService {
                         chatHistory.getChatHistories().add(new ArrayList<>());
                         GenerateQuestionRequestDTO generateQuestionRequestDTO2 = new GenerateQuestionRequestDTO(
                                 chatHistory.getCompetencies().get(chatHistory.getCompetencyIndex()),
-                                chatHistory.getChatHistories().get(competencyIndex));
+                                chatHistory.getChatHistories().get(chatHistory.getCompetencyIndex()));
                         ResponseEntity<GenerateQuestionResponseDTO> response2 = restTemplate.postForEntity(
                                 EndpointConstants.INTERVIEW_SERVICE + "/transcript", generateQuestionRequestDTO2,
                                 GenerateQuestionResponseDTO.class);
 
                         if (!response2.getStatusCode().is2xxSuccessful()) {
-                            throw new RuntimeException("Failed to generate next interview question");
+                            throw new RestClientException("Failed to generate next interview question");
                         }
 
                         GenerateQuestionResponseDTO responseBody = response2.getBody();
@@ -139,12 +147,12 @@ public class InterviewService {
                             jobService.save(jobApplication);
                             return new InterviewResponseDTO(InterviewStatus.ON_GOING, responseBody.getResponse());
                         } else {
-                            throw new RuntimeException("Failed to get response body");
+                            throw new RestClientException("Failed to get response body");
                         }
                     }
                 }
             } else {
-                throw new RuntimeException("Failed to get response body");
+                throw new RestClientException("Failed to get response body");
             }
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");

@@ -74,6 +74,7 @@ public class JobController {
     }
 
     @GetMapping("/posted")
+    @RolesAllowed("RECRUITER")
     public ResponseEntity<Map<String, List<JobResultDTO>>> getPostedJobs() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobResultDTO> jobs = jobService.findAllByUser(username);
