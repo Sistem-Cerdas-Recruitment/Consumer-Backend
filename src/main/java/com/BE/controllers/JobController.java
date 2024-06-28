@@ -108,8 +108,7 @@ public class JobController {
     @RolesAllowed("RECRUITER")
     public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody PostJobRequestDTO postJobRequestDTO) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        PostJobResponseDTO body = jobService.createJob(postJobRequestDTO.getTitle(), postJobRequestDTO.getDescription(),
-                postJobRequestDTO.getMajors(), postJobRequestDTO.getSkills(), username);
+        PostJobResponseDTO body = jobService.createJob(postJobRequestDTO, username);
         return ResponseEntity.ok().body(body);
     }
 

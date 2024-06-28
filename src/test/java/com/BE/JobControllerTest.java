@@ -287,15 +287,21 @@ class JobControllerTest {
     @Test
     void testPostJob() {
         // Arrange
-        PostJobRequestDTO postJobRequestDTO = new PostJobRequestDTO("Job 1", "Desc 1", 1, List.of("Comp Sci"),
-                List.of("Java"));
+        PostJobRequestDTO postJobRequestDTO = PostJobRequestDTO.builder()
+                .title("Job 1")
+                .description("Desc 1")
+                .yearsOfExperience(1)
+                .majors(List.of("Comp Sci"))
+                .skills(List.of("Java"))
+                .build();
+        when(jobService.createJob(postJobRequestDTO, "username")).thenReturn(PostJobResponseDTO.builder().build());
 
         // Act
         ResponseEntity<PostJobResponseDTO> response = jobController.postJob(postJobRequestDTO);
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        verify(jobService, times(1)).createJob(eq("Job 1"), eq("Desc 1"), eq(List.of("Comp Sci")), eq(List.of("Java")),
+        verify(jobService, times(1)).createJob(eq(postJobRequestDTO),
                 eq("username"));
     }
 
@@ -303,7 +309,7 @@ class JobControllerTest {
     void testApplyForJob() {
         // Arrange
         JobApplicationRequestDTO jobApplicationRequestDTO = new JobApplicationRequestDTO(UUID.randomUUID(),
-                UUID.randomUUID(), null, null, null, null, null, null, null, null, null);
+                UUID.randomUUID(), null);
 
         // Act
         ResponseEntity<JobApplicationDTO> response = jobController.applyForJob(jobApplicationRequestDTO);

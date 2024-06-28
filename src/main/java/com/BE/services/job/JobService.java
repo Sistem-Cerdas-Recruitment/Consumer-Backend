@@ -26,6 +26,7 @@ import com.BE.dto.interview.InterviewChatDTO;
 import com.BE.dto.interview.InterviewChatHistoryDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.JobStatusResponseDTO;
+import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
 import com.BE.dto.job.application.JobApplicationRequestDTO;
@@ -198,14 +199,23 @@ public class JobService {
         }
     }
 
-    public PostJobResponseDTO createJob(String title, String description, List<String> majors,
-            List<String> skills, String username) {
+    public PostJobResponseDTO createJob(PostJobRequestDTO request, String username) {
         User user = userService.getUserByEmail(username);
         Job job = Job.builder()
-                .title(title)
-                .description(description)
-                .majors(majors)
-                .skills(skills)
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .majors(request.getMajors())
+                .skills(request.getSkills())
+                .yearsOfExperience(request.getYearsOfExperience())
+                .salary(request.getSalary())
+                .advantages(request.getAdvantages())
+                .additionalInfo(request.getAdditionalInfo())
+                .mode(request.getMode())
+                .type(request.getType())
+                .location(request.getLocation())
+                .experienceLevel(request.getExperienceLevel())
+                .responsibilities(request.getResponsibilities())
+                .requirements(request.getRequirements())
                 .user(user)
                 .status(JobStatus.OPEN)
                 .build();
@@ -217,6 +227,16 @@ public class JobService {
                 .description(job.getDescription())
                 .majors(job.getMajors())
                 .skills(job.getSkills())
+                .minYearsOfExperience(job.getYearsOfExperience())
+                .salary(job.getSalary())
+                .advantages(job.getAdvantages())
+                .additionalInfo(job.getAdditionalInfo())
+                .mode(job.getMode())
+                .type(job.getType())
+                .location(job.getLocation())
+                .experienceLevel(job.getExperienceLevel())
+                .responsibilities(job.getResponsibilities())
+                .requirements(job.getRequirements())
                 .userId(job.getUser().getId())
                 .company(job.getUser().getName())
                 .build();
