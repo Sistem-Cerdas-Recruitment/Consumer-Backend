@@ -74,7 +74,6 @@ public class InterviewService {
                 && jobApplication.getStatus().equals(JobApplicationStatus.INTERVIEW)) {
             InterviewChatHistoryDTO chatHistory = jobApplication.getInterviewChatHistory();
             int competencyIndex = chatHistory.getCompetencyIndex();
-            // log.info("Competency Index: {}, last chat history: [{}]", competencyIndex, chatHistory.getChatHistories().get(competencyIndex).size());
             InterviewChatDTO interviewChatLogDTO = chatHistory.getChatHistories().get(competencyIndex)
                     .get(chatHistory.getChatHistories().get(competencyIndex).size() - 1);
 
@@ -142,7 +141,7 @@ public class InterviewService {
 
                         GenerateQuestionResponseDTO responseBody = response2.getBody();
                         if (responseBody != null) {
-                            chatHistory.getChatHistories().get(competencyIndex)
+                            chatHistory.getChatHistories().get(chatHistory.getCompetencyIndex())
                                     .add(InterviewChatDTO.builder().question(responseBody.getResponse()).build());
                             jobService.save(jobApplication);
                             return new InterviewResponseDTO(InterviewStatus.ON_GOING, responseBody.getResponse());
