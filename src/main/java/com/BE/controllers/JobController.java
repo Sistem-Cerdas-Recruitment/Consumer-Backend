@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -98,7 +99,7 @@ public class JobController {
 
     @PatchMapping("/status")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<JobStatusResponseDTO> updateJobStatus(@RequestBody JobStatusRequestDTO request) {
+    public ResponseEntity<JobStatusResponseDTO> updateJobStatus(@RequestBody @Validated JobStatusRequestDTO request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobStatusResponseDTO job = jobService.updateJobStatus(request.getJobId(), request.getStatus(), username);
         return ResponseEntity.ok(job);
@@ -106,7 +107,7 @@ public class JobController {
 
     @PostMapping("/post")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody PostJobRequestDTO postJobRequestDTO) {
+    public ResponseEntity<PostJobResponseDTO> postJob(@RequestBody @Validated PostJobRequestDTO postJobRequestDTO) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PostJobResponseDTO body = jobService.createJob(postJobRequestDTO, username);
         return ResponseEntity.ok().body(body);
@@ -149,7 +150,7 @@ public class JobController {
 
     @PatchMapping("/application/status")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<JobApplicationStatusResponseDTO> updateApplicationStatus(@RequestBody JobApplicationStatusRequestDTO request) {
+    public ResponseEntity<JobApplicationStatusResponseDTO> updateApplicationStatus(@RequestBody @Validated JobApplicationStatusRequestDTO request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobApplicationStatusResponseDTO body = jobService.updateApplicationStatus(request.getJobApplicationId(), request.getIsAccepted(), username);
         return ResponseEntity.ok(body);
@@ -157,7 +158,7 @@ public class JobController {
 
     @PostMapping("/apply")
     @RolesAllowed("CANDIDATE")
-    public ResponseEntity<JobApplicationDTO> applyForJob(@RequestBody JobApplicationRequestDTO body) {
+    public ResponseEntity<JobApplicationDTO> applyForJob(@RequestBody @Validated JobApplicationRequestDTO body) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobApplicationDTO jobApplicationDto = jobService.apply(body, username);
         return ResponseEntity.ok().body(jobApplicationDto);

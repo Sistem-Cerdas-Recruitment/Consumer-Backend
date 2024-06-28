@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,20 +38,20 @@ public class InterviewController {
     }
 
     @PatchMapping("/answer")
-    public ResponseEntity<InterviewResponseDTO> answerInterview(@RequestBody InterviewAnswerRequestDTO request) {
+    public ResponseEntity<InterviewResponseDTO> answerInterview(@RequestBody @Validated InterviewAnswerRequestDTO request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         InterviewResponseDTO body = interviewService.answer(request.getJobApplicationId(), username, request.getChat());
         return ResponseEntity.ok(body);
     }
 
     @PatchMapping("/score")
-    public ResponseEntity<String> scoreInterview(@RequestBody InterviewScoreRequestDTO request) {
+    public ResponseEntity<String> scoreInterview(@RequestBody @Validated InterviewScoreRequestDTO request) {
         interviewService.score(request.getJobApplicationId(), request.getInterviewScore());
         return ResponseEntity.ok("Success");
     }
 
     @PostMapping("/start")
-    public ResponseEntity<InterviewResponseDTO> startInterview(@RequestBody InterviewStartRequestDTO request) {
+    public ResponseEntity<InterviewResponseDTO> startInterview(@RequestBody @Validated InterviewStartRequestDTO request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         InterviewResponseDTO body = interviewService.start(request.getJobApplicationId(), username);
         return ResponseEntity.ok(body);

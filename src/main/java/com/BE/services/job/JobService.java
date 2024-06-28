@@ -249,6 +249,11 @@ public class JobService {
                 .requirements(job.getRequirements())
                 .userId(job.getUser().getId())
                 .company(job.getUser().getName())
+                .applicants(job.getApplicants())
+                .offeredInterview(job.getOfferedInterview())
+                .interviewed(job.getInterviewed())
+                .createdAt(job.getCreatedAt())
+                .updatedAt(job.getUpdatedAt())
                 .build();
         return PostJobResponseDTO.builder()
                 .message("Job posted successfully")

@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class InterviewStartRequestDTO {
+    @NotNull(message = "Job application id is required")
     @JsonProperty("job_application_id")
-    @NotBlank(message = "Job application id is required")
     private UUID jobApplicationId;
 }

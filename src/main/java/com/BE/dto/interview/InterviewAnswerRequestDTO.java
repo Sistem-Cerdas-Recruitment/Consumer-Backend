@@ -5,13 +5,14 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class InterviewAnswerRequestDTO {
     @JsonProperty("job_application_id")
-    @NotBlank(message = "Job application id is required")
+    @NotNull(message = "Job application ID cannot be null")
     private UUID jobApplicationId;
-    @NotBlank(message = "Answer is required")
+    @NotNull(message = "Is accepted cannot be null")
     private InterviewChatDTO chat;
 }
