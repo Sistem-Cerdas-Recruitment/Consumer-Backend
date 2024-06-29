@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -387,21 +386,13 @@ public class JobService {
 
             // jobApplicationRepository.save(jobApplication);
 
-            JSONParser parser = new JSONParser(job.getDescription());
-            Map<String, Object> jobDescription;
-            try {
-                jobDescription = parser.parseObject();
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Failed to parse job description");
-            }
-
             // getMatching
             MatchingRequestDTO matchingRequestDTO = new MatchingRequestDTO(
                     request.getExperience(),
                     JobMatchingDTO.builder()
                             .minYoE(job.getYearsOfExperience())
                             .role(job.getTitle())
-                            .jobDesc(jobDescription.get("description").toString())
+                            .jobDesc(job.getDescription())
                             .majors(job.getMajors())
                             .skills(job.getSkills())
                             .build());

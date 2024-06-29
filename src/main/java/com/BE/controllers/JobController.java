@@ -114,6 +114,7 @@ public class JobController {
     }
 
     @GetMapping("/applications")
+    @RolesAllowed("CANDIDATE")
     public ResponseEntity<Map<String, List<JobApplicationResultDTO>>> getApplications() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobApplicationResultDTO> jobApplications = jobService.findApplications(username);
