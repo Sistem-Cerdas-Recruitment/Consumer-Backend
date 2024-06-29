@@ -13,12 +13,10 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.BE.constants.EndpointConstants;
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
 import com.BE.dto.antiCheat.EvaluationDTO;
@@ -34,7 +32,6 @@ import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.dto.job.matching.JobMatchingDTO;
 import com.BE.dto.job.matching.MatchingRequestDTO;
-import com.BE.dto.job.matching.MatchingResponseDTO;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
@@ -340,7 +337,7 @@ public class JobService {
         JobApplication jobApplication = getJobApplication(applicationId);
         if (jobApplication.getJob().getUser().getEmail().equals(username)) {
             if (jobApplication.getStatus().equals(JobApplicationStatus.PENDING)) {
-                if(status){
+                if (status) {
                     jobApplication
                             .setStatus(JobApplicationStatus.AWAITING_INTERVIEW);
                     jobApplication.getJob().setOfferedInterview(jobApplication.getJob().getOfferedInterview() + 1);
@@ -349,7 +346,7 @@ public class JobService {
                             .setStatus(JobApplicationStatus.REJECTED);
                 }
             } else if (jobApplication.getStatus().equals(JobApplicationStatus.EVALUATED)) {
-                if(status){
+                if (status) {
                     jobApplication
                             .setStatus(JobApplicationStatus.ACCEPTED);
                 } else {
@@ -370,7 +367,8 @@ public class JobService {
 
     public JobApplicationDTO apply(JobApplicationRequestDTO request, String username) {
         User user = userService.getUserByEmail(username);
-        Job job = jobRepository.findById(request.getJobId()).orElseThrow(() -> new NoSuchElementException("Job not found"));
+        Job job = jobRepository.findById(request.getJobId())
+                .orElseThrow(() -> new NoSuchElementException("Job not found"));
         Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobAndUser(job,
                 user);
         CurriculumVitae cv = curriculumVitaeService.find(request.getCvId(), user);
@@ -404,20 +402,26 @@ public class JobService {
 
             log.info(matchingRequestDTO);
 
-            ResponseEntity<MatchingResponseDTO> response = restTemplate.postForEntity(
-                    EndpointConstants.MATCHING_SERVICE + "/classify",
-                    matchingRequestDTO, MatchingResponseDTO.class);
+            // ResponseEntity<MatchingResponseDTO> response;
 
-            log.info(response.getStatusCode());
-            
-            MatchingResponseDTO responseBody = response.getBody();
+            // try {
+            //     response = restTemplate.postForEntity(
+            //             EndpointConstants.MATCHING_SERVICE + "/classify",
+            //             matchingRequestDTO, MatchingResponseDTO.class);
+            // } catch (Exception e) {
+            //     throw new RestClientException("failed to get matching");
+            // }
 
-            if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
-                jobApplication.setRelevanceScore(responseBody.getRelevanceScore());
-                jobApplication.setIsRelevant(responseBody.getIsRelevant());
-            } else {
-                throw new IllegalArgumentException("Failed to get matching");
-            }
+            // log.info(response.getStatusCode());
+
+            // MatchingResponseDTO responseBody = response.getBody();
+
+            // if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
+            //     jobApplication.setRelevanceScore(responseBody.getRelevanceScore());
+            //     jobApplication.setIsRelevant(responseBody.getIsRelevant());
+            // } else {
+            //     throw new IllegalArgumentException("Failed to get matching");
+            // }
 
             job.setApplicants(job.getApplicants() + 1);
             jobRepository.save(job);
