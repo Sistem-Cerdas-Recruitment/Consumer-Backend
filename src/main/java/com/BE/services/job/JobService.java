@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -210,11 +211,13 @@ public class JobService {
 
     public PostJobResponseDTO createJob(PostJobRequestDTO request, String username) {
         User user = userService.getUserByEmail(username);
+        List<String> skills = Stream.concat(request.getResponsibilities().stream(), request.getRequirements().stream())
+                .collect(Collectors.toList());
         Job job = Job.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .majors(request.getMajors())
-                .skills(request.getSkills())
+                .skills(skills)
                 .yearsOfExperience(request.getYearsOfExperience())
                 .salary(request.getSalary())
                 .advantages(request.getAdvantages())

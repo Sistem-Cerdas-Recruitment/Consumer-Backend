@@ -292,7 +292,6 @@ class JobControllerTest {
                 .description("Desc 1")
                 .yearsOfExperience(1)
                 .majors(List.of("Comp Sci"))
-                .skills(List.of("Java"))
                 .build();
         when(jobService.createJob(postJobRequestDTO, "username")).thenReturn(PostJobResponseDTO.builder().build());
 

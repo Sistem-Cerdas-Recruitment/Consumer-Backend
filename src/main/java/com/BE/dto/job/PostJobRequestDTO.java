@@ -27,9 +27,6 @@ public class PostJobRequestDTO {
     @NotNull(message = "Majors cannot be null")
     private List<String> majors;
 
-    @NotNull(message = "Skills cannot be null")
-    private List<String> skills;
-
     @NotNull(message = "Salary cannot be null")
     private String salary;
     
