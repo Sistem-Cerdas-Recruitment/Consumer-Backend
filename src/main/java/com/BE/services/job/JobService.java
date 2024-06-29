@@ -467,7 +467,7 @@ public class JobService {
             for (InterviewChatDTO chatHistory : interviewChatHistory) {
                 chatHistory.setPredictedClass(evaluations.get(evaluationIndex).getPredictedClass());
                 chatHistory.setConfidence(evaluations.get(evaluationIndex).getConfidence());
-                chatHistory.setSecondaryModelPrediction(evaluations.get(evaluationIndex).getSecondaryModelPrediction());
+                chatHistory.setSecondaryModelPrediction(evaluations.get(evaluationIndex).getSecondaryModelProbability());
                 chatHistory.setMainModelProbability(evaluations.get(evaluationIndex).getMainModelProbability());
                 evaluationIndex++;
             }

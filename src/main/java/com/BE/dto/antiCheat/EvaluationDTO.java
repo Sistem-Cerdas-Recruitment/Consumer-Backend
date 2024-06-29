@@ -12,8 +12,8 @@ public class EvaluationDTO {
     @JsonProperty("confidence")
     private String confidence;
 
-    @JsonProperty("secondary_model_prediction")
-    private String secondaryModelPrediction;
+    @JsonProperty("secondary_model_probability")
+    private String secondaryModelProbability;
 
     @JsonProperty("main_model_probability")
     private String mainModelProbability;
