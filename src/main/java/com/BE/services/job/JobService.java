@@ -272,6 +272,8 @@ public class JobService {
                             .jobTitle(jobApplication.getJob().getTitle())
                             .recruiterId(jobApplication.getJob().getUser().getId())
                             .recruiterName(jobApplication.getJob().getUser().getName())
+                            .relevanceScore(jobApplication.getRelevanceScore())
+                            .isRelevant(jobApplication.getIsRelevant())
                             .status(jobApplication.getStatus())
                             .userId(jobApplication.getUser().getId())
                             .userName(jobApplication.getUser().getName())

@@ -11,6 +11,10 @@ public interface JobApplicationProjection {
 
         public JobApplicationStatus getStatus();
 
+        public Double getRelevanceScore();
+
+        public Boolean getIsRelevant();
+
         public UserIdName getUser();
 
         public JobId getJob();
