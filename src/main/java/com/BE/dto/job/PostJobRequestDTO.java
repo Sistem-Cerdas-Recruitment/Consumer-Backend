@@ -2,8 +2,6 @@ package com.BE.dto.job;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +18,8 @@ public class PostJobRequestDTO {
     @NotNull(message = "Description cannot be null")
     private String description;
 
-    @JsonProperty("years_of_experience")
     @NotNull(message = "Years of experience cannot be null")
-    private Integer yearsOfExperience;
+    private Integer minYearsOfExperience;
 
     @NotNull(message = "Majors cannot be null")
     private List<String> majors;
@@ -34,7 +31,6 @@ public class PostJobRequestDTO {
     private List<String> advantages;
 
     @NotNull(message = "Additional info cannot be null")
-    @JsonProperty("additional_info")
     private String additionalInfo;
 
     @NotNull(message = "Mode cannot be null")
@@ -47,7 +43,6 @@ public class PostJobRequestDTO {
     private String location;
 
     @NotNull(message = "Experience level cannot be null")
-    @JsonProperty("experience_level")
     private String experienceLevel;
 
     @NotNull(message = "Responsibilities cannot be null")

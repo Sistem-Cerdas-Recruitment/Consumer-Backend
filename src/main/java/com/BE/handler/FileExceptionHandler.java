@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MultipartException;
 
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -35,6 +36,14 @@ public class FileExceptionHandler {
     public ResponseEntity<Object> handleInvalidFileNameException(InvalidFileNameException e) {
         Map<String, String> body = new HashMap<>();
         body.put("error", e.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<Object> handleMultipartException(MultipartException e) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "Failed to upload file: " + e.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
