@@ -15,6 +15,8 @@ public interface JobApplicationProjection {
 
         public Boolean getIsRelevant();
 
+        public Float getInterviewScore();
+
         public UserIdName getUser();
 
         public JobId getJob();

@@ -274,6 +274,7 @@ public class JobService {
                             .recruiterName(jobApplication.getJob().getUser().getName())
                             .relevanceScore(jobApplication.getRelevanceScore())
                             .isRelevant(jobApplication.getIsRelevant())
+                            .interviewScore(jobApplication.getInterviewScore())
                             .status(jobApplication.getStatus())
                             .userId(jobApplication.getUser().getId())
                             .userName(jobApplication.getUser().getName())
