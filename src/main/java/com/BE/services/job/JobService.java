@@ -337,6 +337,15 @@ public class JobService {
         }
     }
 
+    public String getApplicationCV(UUID applicationId, String username) {
+        JobApplication jobApplication = getJobApplication(applicationId);
+        if (jobApplication.getJob().getUser().getEmail().equals(username) || jobApplication.getUser().getEmail().equals(username)){
+            return curriculumVitaeService.get(jobApplication.getCv().getId(), jobApplication.getUser().getEmail());
+        } else {
+            throw new AccessDeniedException("You are not authorized to access this resource");
+        }
+    }
+
     public JobApplicationStatusResponseDTO updateApplicationStatus(UUID applicationId, Boolean status,
             String username) {
         JobApplication jobApplication = getJobApplication(applicationId);

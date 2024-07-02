@@ -149,6 +149,15 @@ public class JobController {
         return ResponseEntity.ok(jobApplication);
     }
 
+    @GetMapping("/application/{applicationId}/cv")
+    public ResponseEntity<Object> getApplicationCV(@PathVariable UUID applicationId) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String cvUrl = jobService.getApplicationCV(applicationId, username);
+        Map<String, String> body = new HashMap<>();
+        body.put("data", cvUrl);
+        return ResponseEntity.ok(body);
+    }
+
     @PatchMapping("/application/status")
     @RolesAllowed("RECRUITER")
     public ResponseEntity<JobApplicationStatusResponseDTO> updateApplicationStatus(@RequestBody @Validated JobApplicationStatusRequestDTO request) {
