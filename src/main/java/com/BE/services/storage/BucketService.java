@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,8 @@ public class BucketService {
     @Autowired
     private S3Presigner presigner;
 
-    private String bucketName = "sistem-cerdas-bucket";
+    @Value("${aws.bucket.name}")
+    private String bucketName;
 
     public String createPresignedGetUrl(String keyName) {
         GetObjectRequest objectRequest = GetObjectRequest.builder()
