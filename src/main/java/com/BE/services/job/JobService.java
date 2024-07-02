@@ -438,8 +438,6 @@ public class JobService {
                     .jobId(jobApplication.getJob().getId())
                     .jobTitle(jobApplication.getJob().getTitle())
                     .recruiterId(jobApplication.getJob().getUser().getId())
-                    .relevanceScore(jobApplication.getRelevanceScore())
-                    .isRelevant(jobApplication.getIsRelevant())
                     .experience(request.getExperience())
                     .recruiterName(jobApplication.getJob().getUser().getName())
                     .userId(jobApplication.getUser().getId())
