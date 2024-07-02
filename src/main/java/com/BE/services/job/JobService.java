@@ -13,10 +13,13 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.BE.constants.EndpointConstants;
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.JobStatus;
 import com.BE.dto.antiCheat.EvaluationDTO;
@@ -32,6 +35,7 @@ import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.dto.job.matching.JobMatchingDTO;
 import com.BE.dto.job.matching.MatchingRequestDTO;
+import com.BE.dto.job.matching.MatchingResponseDTO;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.Job;
 import com.BE.entities.JobApplication;
@@ -403,26 +407,26 @@ public class JobService {
 
             log.info(matchingRequestDTO);
 
-            // ResponseEntity<MatchingResponseDTO> response;
+            ResponseEntity<MatchingResponseDTO> response;
 
-            // try {
-            //     response = restTemplate.postForEntity(
-            //             EndpointConstants.MATCHING_SERVICE + "/classify",
-            //             matchingRequestDTO, MatchingResponseDTO.class);
-            // } catch (Exception e) {
-            //     throw new RestClientException("failed to get matching");
-            // }
+            try {
+                response = restTemplate.postForEntity(
+                        EndpointConstants.MATCHING_SERVICE + "/classify",
+                        matchingRequestDTO, MatchingResponseDTO.class);
+            } catch (Exception e) {
+                throw new RestClientException("failed to get matching");
+            }
 
-            // log.info(response.getStatusCode());
+            log.info(response.getStatusCode());
 
-            // MatchingResponseDTO responseBody = response.getBody();
+            MatchingResponseDTO responseBody = response.getBody();
 
-            // if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
-            //     jobApplication.setRelevanceScore(responseBody.getRelevanceScore());
-            //     jobApplication.setIsRelevant(responseBody.getIsRelevant());
-            // } else {
-            //     throw new IllegalArgumentException("Failed to get matching");
-            // }
+            if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
+                jobApplication.setRelevanceScore(responseBody.getRelevanceScore());
+                jobApplication.setIsRelevant(responseBody.getIsRelevant());
+            } else {
+                throw new IllegalArgumentException("Failed to get matching");
+            }
 
             job.setApplicants(job.getApplicants() + 1);
             jobRepository.save(job);

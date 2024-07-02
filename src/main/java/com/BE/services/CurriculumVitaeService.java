@@ -101,6 +101,14 @@ public class CurriculumVitaeService {
         return curriculumVitaeRepository.save(cv);
     }
 
+    public CurriculumVitae delete(UUID id) {
+        CurriculumVitae cv = curriculumVitaeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("CV not found"));
+        bucketService.delete(cv.getFileName());
+        curriculumVitaeRepository.delete(cv);
+        return cv;
+    }
+
     public CurriculumVitae setDefault(UUID cvId, String username) {
         User user = userService.getUserByEmail(username);
         List<CurriculumVitae> cvs = curriculumVitaeRepository.findAllByUser(user,

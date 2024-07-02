@@ -86,4 +86,12 @@ public class BucketService {
             throw S3Exception.builder().cause(e).build();
         }
     }
+
+    public void delete(String keyName) {
+        try {
+            s3Client.deleteObject(b -> b.bucket(bucketName).key(keyName));    
+        } catch (Exception e) {
+            throw S3Exception.builder().cause(e).build();
+        }
+    }
 }
