@@ -1,6 +1,5 @@
 package com.BE.controllers;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,9 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.BE.dto.file.FileResponseDTO;
 import com.BE.dto.file.MultipleFileResponseDTO;
+import com.BE.dto.file.URLResponseDTO;
 import com.BE.entities.CurriculumVitae;
 import com.BE.services.CurriculumVitaeService;
 import com.BE.services.storage.BucketService;
+
+import jakarta.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping("/api/file")
@@ -57,6 +59,7 @@ public class FileController {
 
     // @SuppressWarnings("null")
     @PostMapping("/cv/upload")
+    @RolesAllowed("CANDIDATE")
     public ResponseEntity<Object> uploadCV(@RequestParam("file") MultipartFile file) {
 
         String originalFileName = file.getOriginalFilename();
@@ -100,9 +103,7 @@ public class FileController {
 
         if (id.isPresent()) {
             String cvUrl = curriculumVitaeService.get(UUID.fromString(id.get()), username);
-            Map<String, String> body = new HashMap<>();
-            body.put("data", cvUrl);
-            return ResponseEntity.ok(body);
+            return ResponseEntity.ok(new URLResponseDTO(cvUrl));
         } else {
             List<CurriculumVitae> cvPage = curriculumVitaeService.get(username);
             MultipleFileResponseDTO body = new MultipleFileResponseDTO(cvPage);
@@ -120,6 +121,7 @@ public class FileController {
     }
 
     @PostMapping("/cv/extract")
+    @RolesAllowed("CANDIDATE")
     public ResponseEntity<Object> extractCV(@RequestBody Map<String, UUID> request) {
         return curriculumVitaeService.extract(request.get("id"));
     }

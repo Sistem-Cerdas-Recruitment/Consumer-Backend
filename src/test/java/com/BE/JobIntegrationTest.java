@@ -1,4 +1,4 @@
-package com.BE.controllers;
+package com.BE;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,6 +36,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.BE.constants.JobStatus;
 import com.BE.constants.Role;
+import com.BE.controllers.JobController;
 import com.BE.dto.job.JobListResponseDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.JobStatusRequestDTO;
@@ -44,17 +45,13 @@ import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.entities.User;
 import com.BE.repositories.JobRepository;
-import com.BE.repositories.UserRepository;
 import com.BE.security.JwtService;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class JobControllerTest {
+public class JobIntegrationTest {
 
     // @Autowired
     // private MockMvc mockMvc;
@@ -72,9 +69,6 @@ public class JobControllerTest {
     private JobController jobController;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private JobRepository jobRepository;
 
     @Autowired
@@ -86,7 +80,7 @@ public class JobControllerTest {
 
     @BeforeAll
     public static void setUpAll() {
-        MockitoAnnotations.openMocks(JobControllerTest.class);
+        MockitoAnnotations.openMocks(JobIntegrationTest.class);
     }
 
     @BeforeEach
@@ -96,16 +90,6 @@ public class JobControllerTest {
 
     @AfterEach
     public void tearDownEach() {
-    }
-
-    @Test
-    public void testGetUser() {
-        // log.info(userRepository.findById(candidate.getId()));
-        // log.info(userRepository.findById(recruiter.getId()));
-        // log.info(userRepository.findAll());
-        log.info(userRepository.findAll());
-        // assertNotNull(userRepository.findById(candidate.getId()));
-        // assertNotNull(userRepository.findById(recruiter.getId()));
     }
 
     @Test
@@ -122,7 +106,6 @@ public class JobControllerTest {
         assertNotNull(response.getBody());
         JobListResponseDTO body = response.getBody();
         assertNotNull(body.getData());
-        log.info(jobRepository.findAll().stream().map(j -> j.getTitle()).toList());
         assertEquals(jobRepository.count(), body.getData().size());
     }
 
@@ -192,7 +175,7 @@ public class JobControllerTest {
     @Order(5)
     @Transactional
     @SuppressWarnings("null")
-    public void T141_testPostJob_WithRecruiter() {
+    public void T_141_testPostJob_WithRecruiter() {
 
         // Mocking the user
         User user = User.builder()
@@ -317,7 +300,7 @@ public class JobControllerTest {
     @Test
     @Order(8)
     @SuppressWarnings("null")
-    public void T151_testUpdateJobStatus_WithRecruiter() {
+    public void T_151_testUpdateJobStatus_WithRecruiter() {
 
         // Mocking the user
         User user = User.builder()
