@@ -53,9 +53,6 @@ import com.BE.security.JwtService;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JobIntegrationTest {
 
-    // @Autowired
-    // private MockMvc mockMvc;
-
     @Autowired
     private TestRestTemplate restTemplate;
 

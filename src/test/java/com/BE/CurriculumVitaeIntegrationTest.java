@@ -35,9 +35,6 @@ import com.BE.repositories.CurriculumVitaeRepository;
 import com.BE.security.JwtService;
 import com.BE.services.CurriculumVitaeService;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @Testcontainers

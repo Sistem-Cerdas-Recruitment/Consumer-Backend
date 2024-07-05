@@ -27,6 +27,7 @@ import com.BE.dto.job.JobStatusResponseDTO;
 import com.BE.dto.job.PostJobRequestDTO;
 import com.BE.dto.job.PostJobResponseDTO;
 import com.BE.dto.job.application.JobApplicationDTO;
+import com.BE.dto.job.application.JobApplicationListResponseDTO;
 import com.BE.dto.job.application.JobApplicationRequestDTO;
 import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.dto.job.application.JobApplicationStatusRequestDTO;
@@ -110,24 +111,18 @@ public class JobController {
 
     @GetMapping("/applications")
     @RolesAllowed("CANDIDATE")
-    public ResponseEntity<Map<String, List<JobApplicationResultDTO>>> getApplications() {
+    public ResponseEntity<JobApplicationListResponseDTO> getApplications() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobApplicationResultDTO> jobApplications = jobService.findApplications(username);
-        Map<String, List<JobApplicationResultDTO>> body = new HashMap<>();
-        body.put("data", jobApplications);
-
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new JobApplicationListResponseDTO(jobApplications));
     }
 
     @GetMapping("{jobId}/applications")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<Map<String, List<JobApplicationResultDTO>>> getJobApplications(@PathVariable UUID jobId) {
+    public ResponseEntity<JobApplicationListResponseDTO> getJobApplications(@PathVariable UUID jobId) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobApplicationResultDTO> jobApplications = jobService.findApplications(jobId, username);
-        Map<String, List<JobApplicationResultDTO>> body = new HashMap<>();
-        body.put("data", jobApplications);
-
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new JobApplicationListResponseDTO(jobApplications));
     }
 
     @GetMapping("/application/{applicationId}")
