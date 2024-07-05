@@ -40,6 +40,7 @@ jobs:
         run: |
           echo '${{ secrets.ENV }}' >> src/main/resources/application.properties
           echo '${{ secrets.X_API_KEY }}' >> src/main/resources/application.properties
+          echo '${{ secrets.TEST_ENV }}' >> src/test/resources/application.properties
           
       - name: Set Up Image
         run: |

@@ -491,4 +491,9 @@ public class JobService {
     public JobApplication save(JobApplication jobApplication) {
         return jobApplicationRepository.save(jobApplication);
     }
+
+    public String delete(UUID jobId) {
+        jobRepository.deleteById(jobId);
+        return "Job deleted successfully";
+    }
 }

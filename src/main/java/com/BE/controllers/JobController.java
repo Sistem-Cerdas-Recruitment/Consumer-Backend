@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.BE.dto.job.JobListResponseDTO;
 import com.BE.dto.job.JobResultDTO;
 import com.BE.dto.job.JobStatusRequestDTO;
 import com.BE.dto.job.JobStatusResponseDTO;
@@ -43,13 +44,10 @@ public class JobController {
     public JobService jobService;
 
     @GetMapping("/all")
-    public ResponseEntity<Map<String, List<JobResultDTO>>> getAllJobs() {
+    public ResponseEntity<JobListResponseDTO> getAllJobs() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobResultDTO> jobs = jobService.findAllOpenJobs(username);
-        Map<String, List<JobResultDTO>> body = new HashMap<>();
-        body.put("data", jobs);
-
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new JobListResponseDTO(jobs));
     }
 
     @GetMapping("/all/get")
@@ -76,13 +74,10 @@ public class JobController {
 
     @GetMapping("/posted")
     @RolesAllowed("RECRUITER")
-    public ResponseEntity<Map<String, List<JobResultDTO>>> getPostedJobs() {
+    public ResponseEntity<JobListResponseDTO> getPostedJobs() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<JobResultDTO> jobs = jobService.findAllByUser(username);
-        Map<String, List<JobResultDTO>> body = new HashMap<>();
-        body.put("data", jobs);
-
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new JobListResponseDTO(jobs));
     }
 
     @GetMapping("/all/{page}/{size}")
