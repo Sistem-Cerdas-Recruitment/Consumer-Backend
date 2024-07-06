@@ -30,6 +30,7 @@ import com.BE.dto.job.application.JobApplicationRequestDTO;
 import com.BE.dto.job.application.JobApplicationStatusRequestDTO;
 import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.entities.User;
+import com.BE.repositories.JobApplicationRepository;
 import com.BE.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -50,6 +51,9 @@ public class JobApplicationIntegrationTest {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
 
     private static UUID jobApplicationId;
 
@@ -79,7 +83,7 @@ public class JobApplicationIntegrationTest {
 
         // Then
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(1, response.getBody().getData().size());
+        assertEquals(jobApplicationRepository.count(), response.getBody().getData().size());
     }
 
     @Test

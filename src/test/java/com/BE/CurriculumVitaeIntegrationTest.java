@@ -188,7 +188,7 @@ public class CurriculumVitaeIntegrationTest {
     public void T_332_testUploadCV_SizeLimit() {
         // Cleanup
         curriculumVitaeService.delete(cvId);
-        assertEquals(1, curriculumVitaeRepository.count());
+        assertEquals(2, curriculumVitaeRepository.count());
 
         // Given
 

@@ -13,3 +13,19 @@ VALUES(
     '2f1b1f18-e26c-442f-938e-90730b0d125d'::uuid, 
     '6cd5cac6-6cb5-4222-a209-6f4ae591a593'::uuid, 
     '21936608-d7da-4b77-8636-90908b1cd022'::uuid);
+
+INSERT INTO public.job_application
+(id, created_at, updated_at, experience, interview_chat_history, interview_score, is_relevant, relevance_score, status, cv_id, job_id, user_id)
+VALUES(
+    '5f52082b-1a23-4a5e-9d64-407529ea172e'::uuid, 
+    '2024-06-29 15:29:19.147', 
+    '2024-06-30 17:28:34.572', 
+    '{"skills": ["ReactJS", "TailwindCSS", "PHP", "Redis", "NodeJS (", "Express )", "MySQL", "PostgreSQL", "Java (", "SOAP )", "Docker", "Typescript", "Python", "C", "C + +", "Ruby", "Go", "Java", "MySQL", "PostgreSQL", "MongoDB", "Redis", "React", "Vue", "Express", "Ruby on Rails", "Go Gin", "TailwindCSS", "ChakraUI", "Docker", "Git", "Jira", "Trello", "Google Cloud Platform ( GCP )", "Netlify", "Vercel"], "educations": [{"GPA": "3.56", "major": "School of Electrical Engineering and Informatics", "campus": "Institut Teknologi Bandung"}], "experiences": [{"end": "2023-08-20", "start": "2023-05-20", "company": "Andalin", "position": "Frontend Developer Intern", "description": "Took an active role in the addition of front-end features and maintenance on Andalin’s three primary websites (customer, \ninternal, and company profile website) using VueJS."}]}'::jsonb, 
+    '{ "competencies": [ "Mastered database management system (any DB engine, preferred MongoDB)" ], "chatHistories": [], "competencyIndex": 0 }', 
+    NULL, 
+    false, 
+    NULL, 
+    1, 
+    '18b3dc99-584a-4dfa-83f7-c1a45cc546fe'::uuid, 
+    '6cd5cac6-6cb5-4222-a209-6f4ae591a593'::uuid, 
+    'dd3b6b82-c532-4cdc-9429-cc6c3eeea623'::uuid);
