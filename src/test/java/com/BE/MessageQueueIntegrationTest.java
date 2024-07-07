@@ -57,13 +57,13 @@ public class MessageQueueIntegrationTest {
   }
 
   @Test
-  public void givenEmbeddedKafkaBroker_whenSendingInterviewEvaluationt_thenMessageReceived()
+  public void T_611_whenSendingInterviewEvaluationt_thenMessageReceived()
       throws Exception {
 
     InterviewEvaluationDTO interviewEvaluationDTO = InterviewEvaluationDTO.builder().jobApplicationId(null)
         .competences(List.of()).build();
     interviewService.evaluteInterview(interviewEvaluationDTO);
-    Awaitility.await().atMost(Duration.ofSeconds(20)).until(() -> consumer.getReady());
+    Awaitility.await().atMost(Duration.ofSeconds(10)).until(() -> consumer.getReady());
     String objStr = objectMapper.writeValueAsString(interviewEvaluationDTO).replaceAll("\"", "");
     String data = consumer.getMessage().replaceAll("\"", "").replaceAll("\\\\", "");
     assertEquals(objStr, data);
@@ -71,12 +71,12 @@ public class MessageQueueIntegrationTest {
   }
 
   @Test
-  public void givenEmbeddedKafkaBroker_whenSendingAntiCheatMessage_thenMessageReceived()
+  public void T_621_whenSendingAntiCheatMessage_thenMessageReceived()
       throws Exception {
 
     AntiCheatEvaluationDTO data = AntiCheatEvaluationDTO.builder().jobApplicationId(null).data(List.of()).build();
     antiCheatService.checkForCheating(data);
-    Awaitility.await().atMost(Duration.ofSeconds(20)).until(() -> consumer.getReady());
+    Awaitility.await().atMost(Duration.ofSeconds(10)).until(() -> consumer.getReady());
     String objStr = objectMapper.writeValueAsString(data).replaceAll("\"", "");
     String message = consumer.getMessage().replaceAll("\"", "").replaceAll("\\\\", "");
     assertEquals(objStr, message);

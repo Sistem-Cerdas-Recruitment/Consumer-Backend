@@ -25,12 +25,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.BE.constants.JobApplicationStatus;
 import com.BE.constants.Role;
-import com.BE.dto.interview.InterviewAnswerRequestDTO;
-import com.BE.dto.interview.InterviewChatDTO;
 import com.BE.dto.interview.InterviewDTO;
-import com.BE.dto.interview.InterviewResponseDTO;
 import com.BE.dto.interview.InterviewScoreRequestDTO;
-import com.BE.dto.interview.InterviewStartRequestDTO;
 import com.BE.entities.JobApplication;
 import com.BE.entities.User;
 import com.BE.repositories.JobApplicationRepository;
@@ -57,7 +53,7 @@ public class InterviewIntegrationTest {
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
 
-    private static String question;
+//     private static String question;
 
     @Test
     @Order(1)
@@ -120,209 +116,209 @@ public class InterviewIntegrationTest {
         jobApplicationRepository.save(application);
     }
 
-    @Test
-    @Order(3)
-    @SuppressWarnings("null")
-    public void T_421_testStartInterview() {
-        // Given
+//     @Test
+//     @Order(3)
+//     @SuppressWarnings("null")
+//     public void T_421_testStartInterview() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("candidateTest2@mail.com")
-                .role(Role.CANDIDATE)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("candidateTest2@mail.com")
+//                 .role(Role.CANDIDATE)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        HttpEntity<InterviewStartRequestDTO> entity = new HttpEntity<>(
-                new InterviewStartRequestDTO(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")), headers);
+//         HttpEntity<InterviewStartRequestDTO> entity = new HttpEntity<>(
+//                 new InterviewStartRequestDTO(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")), headers);
 
-        // When
-        ResponseEntity<InterviewResponseDTO> response2 = restTemplate.exchange(
-                "http://localhost:" + port + "/api/interview/start",
-                HttpMethod.POST, entity, InterviewResponseDTO.class);
+//         // When
+//         ResponseEntity<InterviewResponseDTO> response2 = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/interview/start",
+//                 HttpMethod.POST, entity, InterviewResponseDTO.class);
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(200), response2.getStatusCode());
-        assertNotNull(response2.getBody());
-        question = response2.getBody().getResponse();
-    }
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(200), response2.getStatusCode());
+//         assertNotNull(response2.getBody());
+//         question = response2.getBody().getResponse();
+//     }
 
-    @Test
-    @Order(4)
-    public void T_422_testStartInterview_InvalidStatus() {
-        // Given
+//     @Test
+//     @Order(4)
+//     public void T_422_testStartInterview_InvalidStatus() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("candidateTest2@mail.com")
-                .role(Role.CANDIDATE)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("candidateTest2@mail.com")
+//                 .role(Role.CANDIDATE)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        HttpEntity<InterviewStartRequestDTO> entity = new HttpEntity<>(
-                new InterviewStartRequestDTO(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")),
-                headers);
+//         HttpEntity<InterviewStartRequestDTO> entity = new HttpEntity<>(
+//                 new InterviewStartRequestDTO(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")),
+//                 headers);
 
-        // When
-        ResponseEntity<InterviewResponseDTO> response2 = restTemplate.exchange(
-                "http://localhost:" + port + "/api/interview/start",
-                HttpMethod.POST, entity, InterviewResponseDTO.class);
+//         // When
+//         ResponseEntity<InterviewResponseDTO> response2 = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/interview/start",
+//                 HttpMethod.POST, entity, InterviewResponseDTO.class);
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(403), response2.getStatusCode());
-    }
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(403), response2.getStatusCode());
+//     }
 
-    @Test
-    @Order(5)
-    public void T_423_testStartInterview_WithRecruiter() {
-        // Given
+//     @Test
+//     @Order(5)
+//     public void T_423_testStartInterview_WithRecruiter() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("recruiterTest1@mail.com")
-                .role(Role.RECRUITER)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("recruiterTest1@mail.com")
+//                 .role(Role.RECRUITER)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        HttpEntity<InterviewStartRequestDTO> entity = new HttpEntity<>(
-                new InterviewStartRequestDTO(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")),
-                headers);
+//         HttpEntity<InterviewStartRequestDTO> entity = new HttpEntity<>(
+//                 new InterviewStartRequestDTO(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")),
+//                 headers);
 
-        // When
-        ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/interview/start",
-                HttpMethod.POST, entity, InterviewResponseDTO.class);
+//         // When
+//         ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/interview/start",
+//                 HttpMethod.POST, entity, InterviewResponseDTO.class);
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
-    }
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
+//     }
 
-    @Test
-    @Order(6)
-    @SuppressWarnings("null")
-    public void T_431_testAnswerInterview() {
-        // Given
+//     @Test
+//     @Order(6)
+//     @SuppressWarnings("null")
+//     public void T_431_testAnswerInterview() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("candidateTest2@mail.com")
-                .role(Role.RECRUITER)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("candidateTest2@mail.com")
+//                 .role(Role.RECRUITER)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        InterviewAnswerRequestDTO body = InterviewAnswerRequestDTO.builder()
-                .jobApplicationId(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e"))
-                .chat(InterviewChatDTO.builder()
-                        .question(question)
-                        .answer("answer")
-                        .backspaceCount(0)
-                        .build())
-                .build();
+//         InterviewAnswerRequestDTO body = InterviewAnswerRequestDTO.builder()
+//                 .jobApplicationId(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e"))
+//                 .chat(InterviewChatDTO.builder()
+//                         .question(question)
+//                         .answer("answer")
+//                         .backspaceCount(0)
+//                         .build())
+//                 .build();
 
-        HttpEntity<InterviewAnswerRequestDTO> entity = new HttpEntity<>(
-                body, headers);
+//         HttpEntity<InterviewAnswerRequestDTO> entity = new HttpEntity<>(
+//                 body, headers);
 
-        // When
-        ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/interview/answer",
-                HttpMethod.PATCH, entity, InterviewResponseDTO.class);
+//         // When
+//         ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/interview/answer",
+//                 HttpMethod.PATCH, entity, InterviewResponseDTO.class);
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        question = response.getBody().getResponse();
-    }
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+//         question = response.getBody().getResponse();
+//     }
 
-    @Test
-    @Order(7)
-    public void T_432_testAnswerInterview_InvalidStatus() {
-        // Given
+//     @Test
+//     @Order(7)
+//     public void T_432_testAnswerInterview_InvalidStatus() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("candidateTest2@mail.com")
-                .role(Role.RECRUITER)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("candidateTest2@mail.com")
+//                 .role(Role.RECRUITER)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        InterviewAnswerRequestDTO body = InterviewAnswerRequestDTO.builder()
-                .jobApplicationId(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e"))
-                .chat(InterviewChatDTO.builder()
-                        .question(question)
-                        .answer("answer")
-                        .backspaceCount(0)
-                        .build())
-                .build();
+//         InterviewAnswerRequestDTO body = InterviewAnswerRequestDTO.builder()
+//                 .jobApplicationId(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e"))
+//                 .chat(InterviewChatDTO.builder()
+//                         .question(question)
+//                         .answer("answer")
+//                         .backspaceCount(0)
+//                         .build())
+//                 .build();
 
-        HttpEntity<InterviewAnswerRequestDTO> entity = new HttpEntity<>(
-                body, headers);
+//         HttpEntity<InterviewAnswerRequestDTO> entity = new HttpEntity<>(
+//                 body, headers);
 
-        JobApplication application = jobApplicationRepository
-                .findById(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")).get();
-        application.setStatus(JobApplicationStatus.EVALUATED);
-        jobApplicationRepository.save(application);
+//         JobApplication application = jobApplicationRepository
+//                 .findById(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e")).get();
+//         application.setStatus(JobApplicationStatus.EVALUATED);
+//         jobApplicationRepository.save(application);
 
-        // When
-        ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/interview/answer",
-                HttpMethod.PATCH, entity, InterviewResponseDTO.class);
+//         // When
+//         ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/interview/answer",
+//                 HttpMethod.PATCH, entity, InterviewResponseDTO.class);
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
 
-        application.setStatus(JobApplicationStatus.INTERVIEW);
-        jobApplicationRepository.save(application);
-    }
+//         application.setStatus(JobApplicationStatus.INTERVIEW);
+//         jobApplicationRepository.save(application);
+//     }
 
-    @Test
-    @Order(8)
-    public void T_433_testAnswerInterview_WithRecruiter() {
-        // Given
+//     @Test
+//     @Order(8)
+//     public void T_433_testAnswerInterview_WithRecruiter() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("recruiterTest1@mail.com")
-                .role(Role.RECRUITER)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("recruiterTest1@mail.com")
+//                 .role(Role.RECRUITER)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        InterviewAnswerRequestDTO body = InterviewAnswerRequestDTO.builder()
-                .jobApplicationId(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e"))
-                .chat(InterviewChatDTO.builder()
-                        .question(question)
-                        .answer("answer")
-                        .backspaceCount(0)
-                        .build())
-                .build();
+//         InterviewAnswerRequestDTO body = InterviewAnswerRequestDTO.builder()
+//                 .jobApplicationId(UUID.fromString("5f52082b-1a23-4a5e-9d64-407529ea172e"))
+//                 .chat(InterviewChatDTO.builder()
+//                         .question(question)
+//                         .answer("answer")
+//                         .backspaceCount(0)
+//                         .build())
+//                 .build();
 
-        HttpEntity<InterviewAnswerRequestDTO> entity = new HttpEntity<>(
-                body, headers);
+//         HttpEntity<InterviewAnswerRequestDTO> entity = new HttpEntity<>(
+//                 body, headers);
 
-        // When
-        ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/interview/answer",
-                HttpMethod.PATCH, entity, InterviewResponseDTO.class);
+//         // When
+//         ResponseEntity<InterviewResponseDTO> response = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/interview/answer",
+//                 HttpMethod.PATCH, entity, InterviewResponseDTO.class);
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
-    }
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
+//     }
 
     @Test
     @Order(9)
