@@ -14,7 +14,7 @@ import org.springframework.lang.NonNull;
 @Configuration
 public class KafkaAdminConfig {
     
-    @Value("${kafka.bootstrap-servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     @Bean

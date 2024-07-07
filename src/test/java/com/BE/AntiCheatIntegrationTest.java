@@ -27,7 +27,6 @@ import com.BE.constants.JobApplicationStatus;
 import com.BE.dto.antiCheat.AntiCheatResultDTO;
 import com.BE.dto.antiCheat.EvaluationDTO;
 import com.BE.repositories.JobApplicationRepository;
-import com.BE.security.JwtService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
