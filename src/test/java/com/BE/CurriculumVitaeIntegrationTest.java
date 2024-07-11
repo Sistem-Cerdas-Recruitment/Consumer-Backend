@@ -3,7 +3,6 @@ package com.BE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.MethodOrderer;
@@ -27,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.BE.constants.Role;
+import com.BE.dto.CurriculumVitaeRequestDTO;
 import com.BE.dto.file.FileResponseDTO;
 import com.BE.dto.file.MultipleFileResponseDTO;
 import com.BE.dto.file.URLResponseDTO;
@@ -335,9 +335,9 @@ public class CurriculumVitaeIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
-        Map<String, UUID> body = Map.of("id", UUID.fromString("2f1b1f18-e26c-442f-938e-90730b0d125d"));
+        CurriculumVitaeRequestDTO body = new CurriculumVitaeRequestDTO(UUID.fromString("2f1b1f18-e26c-442f-938e-90730b0d125d"));
 
-        HttpEntity<Map<String, UUID>> entity = new HttpEntity<>(body, headers);
+        HttpEntity<CurriculumVitaeRequestDTO> entity = new HttpEntity<>(body, headers);
 
         // When
         ResponseEntity<Object> response = restTemplate.exchange(
@@ -353,6 +353,36 @@ public class CurriculumVitaeIntegrationTest {
 
     @Test
     @Order(10)
+    public void T_342_testExtractCV_MissingFields() {
+        // Given
+
+        // Mocking the user
+        User user = User.builder()
+                .email("candidateTest1@mail.com")
+                .role(Role.CANDIDATE)
+                .build();
+        String token = jwtService.generateToken(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        CurriculumVitaeRequestDTO body = new CurriculumVitaeRequestDTO(null);
+
+        HttpEntity<CurriculumVitaeRequestDTO> entity = new HttpEntity<>(body, headers);
+
+        // When
+        ResponseEntity<Object> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/file/cv/extract",
+                org.springframework.http.HttpMethod.POST,
+                entity,
+                Object.class);
+
+        // Then
+        assertEquals(HttpStatusCode.valueOf(400), response.getStatusCode());
+    }
+
+    @Test
+    @Order(11)
     public void T_342_testExtractCV_WithRecruiter() {
         // Given
 
@@ -366,14 +396,104 @@ public class CurriculumVitaeIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
-        Map<String, UUID> body = Map.of("id", UUID.fromString("2f1b1f18-e26c-442f-938e-90730b0d125d"));
+        CurriculumVitaeRequestDTO body = new CurriculumVitaeRequestDTO(UUID.fromString("2f1b1f18-e26c-442f-938e-90730b0d125d"));
 
-        HttpEntity<Map<String, UUID>> entity = new HttpEntity<>(body, headers);
+        HttpEntity<CurriculumVitaeRequestDTO> entity = new HttpEntity<>(body, headers);
 
         // When
         ResponseEntity<Object> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/file/cv/extract",
                 org.springframework.http.HttpMethod.POST,
+                entity,
+                Object.class);
+
+        // Then
+        assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
+    }
+
+    @Test
+    @Order(12)
+    public void T_342_testSetDefaultCV() {
+        // Given
+
+        // Mocking the user
+        User user = User.builder()
+                .email("candidateTest1@mail.com")
+                .role(Role.CANDIDATE)
+                .build();
+        String token = jwtService.generateToken(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        CurriculumVitaeRequestDTO body = new CurriculumVitaeRequestDTO(UUID.fromString("2f1b1f18-e26c-442f-938e-90730b0d125d"));
+
+        HttpEntity<CurriculumVitaeRequestDTO> entity = new HttpEntity<>(body, headers);
+
+        // When
+        ResponseEntity<Object> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/file/cv/default",
+                org.springframework.http.HttpMethod.PATCH,
+                entity,
+                Object.class);
+
+        // Then
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+    }
+
+    @Test
+    @Order(13)
+    public void T_342_testSetDefaultCV_MissingField() {
+        // Given
+
+        // Mocking the user
+        User user = User.builder()
+                .email("candidateTest1@mail.com")
+                .role(Role.CANDIDATE)
+                .build();
+        String token = jwtService.generateToken(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        CurriculumVitaeRequestDTO body = new CurriculumVitaeRequestDTO(null);
+
+        HttpEntity<CurriculumVitaeRequestDTO> entity = new HttpEntity<>(body, headers);
+
+        // When
+        ResponseEntity<Object> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/file/cv/default",
+                org.springframework.http.HttpMethod.PATCH,
+                entity,
+                Object.class);
+
+        // Then
+        assertEquals(HttpStatusCode.valueOf(400), response.getStatusCode());
+    }
+
+    @Test
+    @Order(11)
+    public void T_342_testSetDefaultCV_WithRecruiter() {
+        // Given
+
+        // Mocking the user
+        User user = User.builder()
+                .email("recruiterTest1@mail.com")
+                .role(Role.RECRUITER)
+                .build();
+        String token = jwtService.generateToken(user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        CurriculumVitaeRequestDTO body = new CurriculumVitaeRequestDTO(UUID.fromString("2f1b1f18-e26c-442f-938e-90730b0d125d"));
+
+        HttpEntity<CurriculumVitaeRequestDTO> entity = new HttpEntity<>(body, headers);
+
+        // When
+        ResponseEntity<Object> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/file/cv/default",
+                org.springframework.http.HttpMethod.PATCH,
                 entity,
                 Object.class);
 

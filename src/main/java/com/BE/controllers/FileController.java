@@ -1,7 +1,6 @@
 package com.BE.controllers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.BE.dto.CurriculumVitaeRequestDTO;
 import com.BE.dto.file.FileResponseDTO;
 import com.BE.dto.file.MultipleFileResponseDTO;
 import com.BE.dto.file.URLResponseDTO;
@@ -85,9 +86,10 @@ public class FileController {
     }
 
     @PatchMapping("/cv/default")
-    public ResponseEntity<Object> setDefaultCV(@RequestBody Map<String, UUID> request) {
+    @RolesAllowed("CANDIDATE")
+    public ResponseEntity<Object> setDefaultCV(@RequestBody @Validated CurriculumVitaeRequestDTO request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurriculumVitae cv = curriculumVitaeService.setDefault(request.get("id"), username);
+        CurriculumVitae cv = curriculumVitaeService.setDefault(request.getId(), username);
         FileResponseDTO body = FileResponseDTO.builder()
                 .id(cv.getId())
                 .fileName(cv.getOriginalFileName())
@@ -122,7 +124,7 @@ public class FileController {
 
     @PostMapping("/cv/extract")
     @RolesAllowed("CANDIDATE")
-    public ResponseEntity<Object> extractCV(@RequestBody Map<String, UUID> request) {
-        return curriculumVitaeService.extract(request.get("id"));
+    public ResponseEntity<Object> extractCV(@RequestBody @Validated CurriculumVitaeRequestDTO request) {
+        return curriculumVitaeService.extract(request.getId());
     }
 }
