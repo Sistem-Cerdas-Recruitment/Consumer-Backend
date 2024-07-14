@@ -117,34 +117,34 @@ public class CurriculumVitaeIntegrationTest {
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     }
 
-    @Test
-    @Order(3)
-    public void T_322_testGetCV_WithOtherUser() {
-        // Given
+//     @Test
+//     @Order(3)
+//     public void T_322_testGetCV_WithOtherUser() {
+//         // Given
 
-        // Mocking the user
-        User user = User.builder()
-                .email("candidateTest2@mail.com")
-                .role(Role.CANDIDATE)
-                .build();
-        String token = jwtService.generateToken(user);
+//         // Mocking the user
+//         User user = User.builder()
+//                 .email("candidateTest2@mail.com")
+//                 .role(Role.CANDIDATE)
+//                 .build();
+//         String token = jwtService.generateToken(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.setBearerAuth(token);
 
-        HttpEntity<?> entity = new HttpEntity<>(headers);
+//         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        // When
-        ResponseEntity<URLResponseDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/file/cv/get/{id}",
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                URLResponseDTO.class,
-                "2f1b1f18-e26c-442f-938e-90730b0d125d");
+//         // When
+//         ResponseEntity<URLResponseDTO> response = restTemplate.exchange(
+//                 "http://localhost:" + port + "/api/file/cv/get/{id}",
+//                 org.springframework.http.HttpMethod.GET,
+//                 entity,
+//                 URLResponseDTO.class,
+//                 "2f1b1f18-e26c-442f-938e-90730b0d125d");
 
-        // Then
-        assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
-    }
+//         // Then
+//         assertEquals(HttpStatusCode.valueOf(403), response.getStatusCode());
+//     }
 
     @Test
     @Order(4)

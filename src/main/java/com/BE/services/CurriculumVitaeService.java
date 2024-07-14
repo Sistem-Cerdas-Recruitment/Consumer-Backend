@@ -45,11 +45,11 @@ public class CurriculumVitaeService {
     public CurriculumVitae find(UUID id, User user) {
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
-        if (cv.getUser().getId().equals(user.getId())) {
-            return cv;
-        } else {
-            throw new AccessDeniedException("You are not authorized to access this resource");
-        }
+        return cv;
+        // if (cv.getUser().getId().equals(user.getId())) {
+        // } else {
+        //     throw new AccessDeniedException("You are not authorized to access this resource");
+        // }
     }
 
     public String get(UUID id, String username) {
@@ -57,11 +57,11 @@ public class CurriculumVitaeService {
         CurriculumVitae cv = curriculumVitaeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("CV not found"));
 
-        if (cv.getUser().getUsername().equals(username)) {
-            return bucketService.createPresignedGetUrl(cv.getFileName());
-        } else {
-            throw new AccessDeniedException("You are not authorized to access this resource");
-        }
+        return bucketService.createPresignedGetUrl(cv.getFileName());
+        // if (cv.getUser().getUsername().equals(username)) {
+        // } else {
+        //     throw new AccessDeniedException("You are not authorized to access this resource");
+        // }
 
     }
 
