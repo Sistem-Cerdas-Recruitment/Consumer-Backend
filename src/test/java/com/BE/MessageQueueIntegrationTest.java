@@ -57,7 +57,7 @@ public class MessageQueueIntegrationTest {
   }
 
   @Test
-  public void T_611_whenSendingInterviewEvaluationt_thenMessageReceived()
+  public void T_711_whenSendingInterviewEvaluationt_thenMessageReceived()
       throws Exception {
 
     InterviewEvaluationDTO interviewEvaluationDTO = InterviewEvaluationDTO.builder().jobApplicationId(null)
@@ -71,7 +71,7 @@ public class MessageQueueIntegrationTest {
   }
 
   @Test
-  public void T_621_whenSendingAntiCheatMessage_thenMessageReceived()
+  public void T_721_whenSendingAntiCheatMessage_thenMessageReceived()
       throws Exception {
 
     AntiCheatEvaluationDTO data = AntiCheatEvaluationDTO.builder().jobApplicationId(null).data(List.of()).build();
