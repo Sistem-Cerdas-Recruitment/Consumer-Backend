@@ -403,11 +403,13 @@ public class JobService {
                     .cv(cv)
                     .build();
 
-            // jobApplicationRepository.save(jobApplication);
+            job.setApplicants(job.getApplicants() + 1);
+            jobRepository.save(job);
+            jobApplication = jobApplicationRepository.save(jobApplication);
 
             // getMatching
             MatchingRequestDTO matchingRequestDTO = new MatchingRequestDTO(
-                    job.getId(),
+                    jobApplication.getId(),
                     new MatchingRequestDataDTO(request.getExperience(), JobMatchingDTO.builder()
                             .minYoE(job.getYearsOfExperience())
                             .role(job.getTitle())
@@ -420,10 +422,6 @@ public class JobService {
 
             // Get Matching
             matchingService.getMatching(matchingRequestDTO);
-
-            job.setApplicants(job.getApplicants() + 1);
-            jobRepository.save(job);
-            jobApplicationRepository.save(jobApplication);
 
             return JobApplicationDTO.builder()
                     .id(jobApplication.getId())
