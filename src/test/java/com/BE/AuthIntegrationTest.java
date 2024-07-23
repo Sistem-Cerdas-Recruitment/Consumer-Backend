@@ -41,7 +41,7 @@ public class AuthIntegrationTest {
 
     @Test
     @Order(1)
-    public void T_611_testRegister() {
+    public void T_711_testRegister() {
 
         // Given
         HttpHeaders headers = new HttpHeaders();
@@ -65,7 +65,7 @@ public class AuthIntegrationTest {
 
     @Test
     @Order(2)
-    public void T_612_testRegister_MissingField() {
+    public void T_712_testRegister_MissingField() {
 
         // Given
         HttpHeaders headers = new HttpHeaders();
@@ -88,7 +88,7 @@ public class AuthIntegrationTest {
 
     @Test
     @Order(3)
-    public void T_621_testLogin() {
+    public void T_721_testLogin() {
 
         // Given
         HttpHeaders headers = new HttpHeaders();
@@ -110,7 +110,7 @@ public class AuthIntegrationTest {
 
     @Test
     @Order(4)
-    public void T_622_testLogin_InvalidCredentials() {
+    public void T_722_testLogin_InvalidCredentials() {
 
         // Given
         HttpHeaders headers = new HttpHeaders();
@@ -131,7 +131,7 @@ public class AuthIntegrationTest {
 
     @Test
     @Order(5)
-    public void T_631_testRefresh() {
+    public void T_731_testRefresh() {
         // Given
 
         // Mocking the user

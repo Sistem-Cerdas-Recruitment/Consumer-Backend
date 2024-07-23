@@ -23,9 +23,11 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.BE.dto.antiCheat.AntiCheatEvaluationDTO;
 import com.BE.dto.interview.InterviewEvaluationDTO;
+import com.BE.dto.job.matching.MatchingRequestDTO;
 import com.BE.services.KafkaConsumerTest;
 import com.BE.services.antiCheat.AntiCheatService;
 import com.BE.services.job.InterviewService;
+import com.BE.services.job.MatchingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -40,6 +42,9 @@ public class MessageQueueIntegrationTest {
 
   @Autowired
   private AntiCheatService antiCheatService;
+
+  @Autowired
+  private MatchingService matchingService;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -57,7 +62,7 @@ public class MessageQueueIntegrationTest {
   }
 
   @Test
-  public void T_711_whenSendingInterviewEvaluationt_thenMessageReceived()
+  public void T_811_whenSendingInterviewEvaluationt_thenMessageReceived()
       throws Exception {
 
     InterviewEvaluationDTO interviewEvaluationDTO = InterviewEvaluationDTO.builder().jobApplicationId(null)
@@ -71,7 +76,7 @@ public class MessageQueueIntegrationTest {
   }
 
   @Test
-  public void T_721_whenSendingAntiCheatMessage_thenMessageReceived()
+  public void T_821_whenSendingAntiCheatMessage_thenMessageReceived()
       throws Exception {
 
     AntiCheatEvaluationDTO data = AntiCheatEvaluationDTO.builder().jobApplicationId(null).data(List.of()).build();
@@ -80,6 +85,19 @@ public class MessageQueueIntegrationTest {
     String objStr = objectMapper.writeValueAsString(data).replaceAll("\"", "");
     String message = consumer.getMessage().replaceAll("\"", "").replaceAll("\\\\", "");
     assertEquals(objStr, message);
-    consumer.setMessage(null);
+    consumer.reset();
+  }
+
+  @Test
+  public void T_831_whenMatchingMessage_thenMessageReceived()
+      throws Exception {
+
+    MatchingRequestDTO data = new MatchingRequestDTO(null, null, null);
+    matchingService.getMatching(data);
+    Awaitility.await().atMost(Duration.ofSeconds(10)).until(() -> consumer.getReady());
+    String objStr = objectMapper.writeValueAsString(data).replaceAll("\"", "");
+    String message = consumer.getMessage().replaceAll("\"", "").replaceAll("\\\\", "");
+    assertEquals(objStr, message);
+    consumer.reset();
   }
 }

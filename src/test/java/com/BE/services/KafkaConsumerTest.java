@@ -24,6 +24,12 @@ public class KafkaConsumerTest {
         this.ready = true;
     }
 
+    @KafkaListener(topics = "matching", groupId = "BE")
+    public void consumeMatching(String message) {
+        this.message = message;
+        this.ready = true;
+    }
+
     public void reset(){
         this.ready = false;
     }
