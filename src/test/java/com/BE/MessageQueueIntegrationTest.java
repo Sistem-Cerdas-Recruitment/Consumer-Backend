@@ -92,7 +92,7 @@ public class MessageQueueIntegrationTest {
   public void T_831_whenMatchingMessage_thenMessageReceived()
       throws Exception {
 
-    MatchingRequestDTO data = new MatchingRequestDTO(null, null, null);
+    MatchingRequestDTO data = new MatchingRequestDTO(null, null);
     matchingService.getMatching(data);
     Awaitility.await().atMost(Duration.ofSeconds(10)).until(() -> consumer.getReady());
     String objStr = objectMapper.writeValueAsString(data).replaceAll("\"", "");

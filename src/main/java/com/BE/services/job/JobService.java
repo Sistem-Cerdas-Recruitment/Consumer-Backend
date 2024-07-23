@@ -32,6 +32,7 @@ import com.BE.dto.job.application.JobApplicationResultDTO;
 import com.BE.dto.job.application.JobApplicationStatusResponseDTO;
 import com.BE.dto.job.matching.JobMatchingDTO;
 import com.BE.dto.job.matching.MatchingRequestDTO;
+import com.BE.dto.job.matching.MatchingRequestDataDTO;
 import com.BE.dto.job.matching.RelevanceUpdateRequestDTO;
 import com.BE.entities.CurriculumVitae;
 import com.BE.entities.Job;
@@ -339,7 +340,8 @@ public class JobService {
 
     public String getApplicationCV(UUID applicationId, String username) {
         JobApplication jobApplication = getJobApplication(applicationId);
-        if (jobApplication.getJob().getUser().getEmail().equals(username) || jobApplication.getUser().getEmail().equals(username)){
+        if (jobApplication.getJob().getUser().getEmail().equals(username)
+                || jobApplication.getUser().getEmail().equals(username)) {
             return curriculumVitaeService.get(jobApplication.getCv().getId(), jobApplication.getUser().getEmail());
         } else {
             throw new AccessDeniedException("You are not authorized to access this resource");
@@ -406,14 +408,13 @@ public class JobService {
             // getMatching
             MatchingRequestDTO matchingRequestDTO = new MatchingRequestDTO(
                     job.getId(),
-                    request.getExperience(),
-                    JobMatchingDTO.builder()
+                    new MatchingRequestDataDTO(request.getExperience(), JobMatchingDTO.builder()
                             .minYoE(job.getYearsOfExperience())
                             .role(job.getTitle())
                             .jobDesc(job.getDescription())
                             .majors(job.getMajors())
                             .skills(job.getSkills())
-                            .build());
+                            .build()));
 
             log.info(matchingRequestDTO);
 
@@ -462,7 +463,8 @@ public class JobService {
             for (InterviewChatDTO chatHistory : interviewChatHistory) {
                 chatHistory.setPredictedClass(evaluations.get(evaluationIndex).getPredictedClass());
                 chatHistory.setConfidence(evaluations.get(evaluationIndex).getConfidence());
-                chatHistory.setSecondaryModelPrediction(evaluations.get(evaluationIndex).getSecondaryModelProbability());
+                chatHistory
+                        .setSecondaryModelPrediction(evaluations.get(evaluationIndex).getSecondaryModelProbability());
                 chatHistory.setMainModelProbability(evaluations.get(evaluationIndex).getMainModelProbability());
                 evaluationIndex++;
             }
@@ -471,7 +473,7 @@ public class JobService {
         return jobApplicationRepository.save(jobApplication);
     }
 
-    public JobApplication updateRelevanceScore(RelevanceUpdateRequestDTO request){
+    public JobApplication updateRelevanceScore(RelevanceUpdateRequestDTO request) {
         JobApplication application = getJobApplication(request.getJobApplicationId());
         application.setRelevanceScore(request.getRelevanceScore());
         application.setIsRelevant(request.getIsRelevant());
