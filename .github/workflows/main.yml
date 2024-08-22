@@ -28,7 +28,7 @@ jobs:
       - name: Configure Docker Client of Gcloud
         run:  |-
           gcloud auth configure-docker --quiet
-          gcloud auth configure-docker asia-docker.pkg.dev --quiet
+          gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -44,13 +44,13 @@ jobs:
           
       - name: Set Up Image
         run: |
-          mvn spring-boot:build-image -Dspring-boot.build-image.imageName=asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
-          docker push asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be
+          mvn spring-boot:build-image -Dspring-boot.build-image.imageName=asia-southeast2-docker.pkg.dev/vocal-collector-431514-m7/be/ta-2-sistem-cerdas-be
+          docker push asia-southeast2-docker.pkg.dev/vocal-collector-431514-m7/be/ta-2-sistem-cerdas-be
 
       - name: Deploy to Cloud run v2
         id: deploy-cloudrun
         run: |
           gcloud run deploy ta-2-sistem-cerdas-be \
-          --image=asia-docker.pkg.dev/ta-2-sistem-cerdas/asia.gcr.io/ta-2-sistem-cerdas-be \
+          --image=asia-southeast2-docker.pkg.dev/vocal-collector-431514-m7/be/ta-2-sistem-cerdas-be \
           --platform=managed --region=asia-southeast2 --allow-unauthenticated \
           --min-instances=1 --max-instances=1 --memory=1Gi --cpu=1 --timeout=300s
